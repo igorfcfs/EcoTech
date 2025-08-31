@@ -1,75 +1,237 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useTheme } from '@/contexts/ThemeContext';
+import { getGeneralStyles } from '@/styles/general';
+import axios from 'axios';
+import * as Location from 'expo-location';
+import { doc, onSnapshot } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { API_URL } from '../../api';
+import CardECoins from '../../components/CardECoins';
+import CardUserLixoReciclado from '../../components/CardUserLixoReciclado';
+import Titulo from '../../components/Titulo';
+import { auth, db } from '../../firebaseConfig';
+import formatarPeso from '../../utils/formatarPeso';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const HomeScreen = () => {
+  
+  const [pontosAcumulados, setPontosAcumulados] = useState(0);
+  const [massa, setMassa] = useState(0);
+  const [userId, setUserId] = useState('');
+  const [localId, setLocalId] = useState(null);
+  const [qtdLixo, setQtdLixo] = useState(null);
+  const [qtdUserLixo, setQtdUserLixo] = useState(null);
+  const [nomeLocal, setNomeLocal] = useState(null);
+  const [nome, setNome] = useState(null);
+  
+  const { colors } = useTheme();
+  const general = getGeneralStyles(colors);
 
-export default function HomeScreen() {
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.backCard,
+      borderRadius: 16,
+      padding: 20,
+      marginVertical: 50,
+    },
+    qtdReciclado: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 20,
+    },
+    banner: {
+      width: '100%',
+      height: 300,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    header: {
+      padding: 50,
+      borderRadius: 16,
+      marginTop: 30,
+      backgroundColor: colors.background
+    },
+    welcomeText: {
+      fontSize: 22,
+      color: '#fff',
+      fontWeight: '600',
+    },
+    subtitle: {
+      fontSize: 18,
+      color: '#F0F0F0',
+      marginTop: 10,
+    },
+    cardTitle: {
+      fontSize: 16,
+      color: colors.branco,
+      fontWeight: 'bold',
+    },
+    cardValue: {
+      fontSize: 16,
+      color: colors.negrito,
+      fontWeight: 'bold',
+    },
+  });
+
+  // Busca dados do usuário logado
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUserId(user.uid);
+        fetchLocalMaisProximo(); // Busca o local mais próximo
+      } else {
+        console.warn("Usuário não está logado");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userRef = doc(db, 'users', user.uid);
+
+    const unsubscribe = onSnapshot(userRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        setNome(data.nome || 'Usuário');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Busca local mais próximo do usuário
+  const fetchLocalMaisProximo = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+
+      const location = await Location.getCurrentPositionAsync({});
+      const userCoords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+
+      const localInfo = await axios.get(`${API_URL}/locais/local_mais_proximo?lat=${userCoords.latitude}&lng=-${userCoords.longitude}`);
+      setLocalId(localInfo.data.id_local)
+      setNomeLocal(localInfo.data.nome_local);
+    } catch (error) {
+      console.error('Erro ao buscar local mais próximo:', error);
+    }
+  };
+
+  // Busca relatório do local e do usuário
+  useEffect(() => {
+    if (!localId || !userId) return;
+
+    const fetchDados = async () => {
+      try {
+        const resLocal = await axios.get(`${API_URL}/relatorio/lixo-reciclado/${localId}`);
+        setQtdLixo(resLocal.data.massa);
+
+        const resUser = await axios.get(`${API_URL}/relatorio/lixo-reciclado/${userId}/${localId}`);
+        setQtdUserLixo(resUser.data.massa);
+      } catch (error) {
+        console.error('Erro ao buscar dados do lixo reciclado:', error);
+      }
+    };
+
+    fetchDados(); // primeira chamada
+    const interval = setInterval(fetchDados, 10000); // a cada 10 segundos
+
+    return () => clearInterval(interval); // limpa o intervalo ao desmontar
+  }, [localId, userId]);
+
+
+  // Atualiza pontos e eletrônicos a cada 60s
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const USER_URL = `${API_URL}/relatorio/${user.uid}`;
+        const response = await axios.get(USER_URL);
+        const analytics = response.data;
+
+        setPontosAcumulados(analytics.pontos);
+        setMassa(analytics.massa);
+      } catch (error) {
+        console.error('Erro ao buscar dados do usuário:', error);
+      }
+    };
+
+    fetchAnalytics();
+    const interval = setInterval(fetchAnalytics, 10000); // Atualiza a cada 10s
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+    <ScrollView>
+      <ImageBackground source={require('../../assets/bannerHome.png')} style={styles.banner}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ justifyContent: 'center', marginRight: 10, marginLeft: 10 }}>
+            <Text style={{ fontSize: 30, color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Bem vindo, {nome}</Text>
+            <Text style={styles.subtitle}>Vamos reciclar juntos.</Text>
+          </View>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={{ width: 100, height: 110 }}
+            resizeMode="cover"
+          />
+        </View>
+      </ImageBackground>
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+      <View style={general.container2}>
+        <CardECoins descricao="Meus E-Coins" quantidade={pontosAcumulados} />
+
+        {nomeLocal ?
+          <View style={styles.container}>
+            <Titulo style={{ textAlign: 'left' }}>
+              Você está próximo à <Text style={{ color: colors.negrito }}>{nomeLocal}</Text>
+            </Titulo>
+
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+              <Text style={styles.cardTitle}>Reciclados nesse local</Text>
+              <Text style={styles.cardValue}>{formatarPeso(qtdLixo)}</Text>
+            </View>
+
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+              <Text style={styles.cardTitle}>Você reciclou nesse local</Text>
+              <Text style={styles.cardValue}>{formatarPeso(qtdUserLixo)}</Text>
+            </View>
+          </View>
+          :
+          <View style={styles.container}>
+            <Titulo style={{ textAlign: 'left' }}>
+              Você está próximo à <ActivityIndicator />
+            </Titulo>
+
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+              <Text style={styles.cardTitle}>Reciclados nesse local</Text>
+              <ActivityIndicator />
+            </View>
+
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+              <Text style={styles.cardTitle}>Você reciclou nesse local</Text>
+              <ActivityIndicator />
+            </View>
+          </View>
+        }
+
+        <View>
+          <Titulo text="Seu Impacto" style={{ alignSelf: 'flex-start', color: colors.negrito, marginRight: 100 }} />
+          <CardUserLixoReciclado massa={massa} />
+        </View>
+      </View>
+
+    </ScrollView>
+  );
+};
+
+export default HomeScreen;

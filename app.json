@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "EcoTech",
-    "slug": "EcoTech",
+    "slug": "ecotrash_v2",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/logo.png",
     "scheme": "ecotech",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -21,7 +21,8 @@
         "googleMaps": {
           "apiKey": "AIzaSyCBakrF6a0PwuRoKd_oP5rGzKbyeDuBiOY"
         }
-      }
+      },
+      "package": "com.igorfcfs.ecotrash_v2"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +43,17 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "aba767d0-22d1-4961-888c-efcc29f50328"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/aba767d0-22d1-4961-888c-efcc29f50328"
     }
   }
 }

@@ -88,12 +88,12 @@ export default function EletronicoCard({ item, vazio }: EletronicoCardProps) {
     <View style={[styles.card, { backgroundColor: colors.backCard }]}>
       {item.foto && <Image source={{ uri: item.foto }} style={styles.image} />}
       <View style={styles.info}>
-        <Text style={[styles.tipo, { color: colors.primario }]}>{item.categoria}</Text>
+        <Text style={[styles.tipo, { color: colors.secundario }]}>{item.categoria}</Text>
         <View style={styles.materiais}>
-          <Text style={[styles.material, { color: colors.secundario }]}>Quantidade: {item.massa}g</Text>
-          <Text style={[styles.material, { color: colors.secundario }]}>🗓️ Reciclado em: {dataFormatada}</Text>
-          <Text style={[styles.material, { color: colors.secundario }]}>📍 Local: {nomeLocal}</Text>
-          <Text style={[styles.material, { color: colors.secundario }]}>Pontos: {item.pontos || 0}</Text>
+          <Text style={[styles.material, { color: colors.branco }]}>Quantidade: {item.massa}g</Text>
+          <Text style={[styles.material, { color: colors.branco }]}>🗓️ Reciclado em: {dataFormatada}</Text>
+          <Text style={[styles.material, { color: colors.branco }]}>📍 Local: {nomeLocal}</Text>
+          <Text style={[styles.material, { color: colors.branco }]}>Pontos: {item.pontos || 0}</Text>
         </View>
       </View>
     </View>

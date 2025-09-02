@@ -1,57 +1,74 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { API_URL } from '../api';
 
+interface LocalComDistancia {
+  id: string;
+  nome: string;
+  distancia: number;
+  // Adicione outras propriedades se existirem, como 'endereco', etc.
+}
+
 interface CardLocaisProps {
-  imageUri: string;
   localId: string;
   nome: string;
   endereco: string;
-  userId?: string | null;
+  latitude?: number;
+  longitude?: number;
 }
 
-const CardLocais = ({ imageUri, localId, nome, endereco, userId }: CardLocaisProps) => {
+const CardLocais = ({ localId, nome, endereco, latitude, longitude }: CardLocaisProps) => {
   const { colors } = useTheme(); // ✅ cores do tema atual
 
-  const [qtdLixo, setQtdLixo] = useState<number | null>(null);
-  const [qtdUserLixo, setQtdUserLixo] = useState<number | null>(null);
+  const [distanciaLocal, setDistanciaLocal] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchDados = async () => {
       try {
-        const resLocal = await axios.get(`${API_URL}/relatorio/lixo-reciclado/${localId}`);
-        setQtdLixo(resLocal.data.massa);
+        // Faz a chamada à API
+        const resDistanciaLocais = await axios.get<LocalComDistancia[]>(`${API_URL}/locais/distancia_locais?lat=${latitude}&lng=${longitude}`);
+        
+        // Procura o local com o ID exato
+        const localEncontrado = resDistanciaLocais.data.find((local: LocalComDistancia) => local.id === localId);
 
-        if (userId) {
-          const resUser = await axios.get(`${API_URL}/relatorio/lixo-reciclado/${userId}/${localId}`);
-          setQtdUserLixo(resUser.data.massa);
+        if (localEncontrado) {
+          // Se o local for encontrado, atualiza o estado com a distância
+          setDistanciaLocal(localEncontrado.distancia);
+        } else {
+          console.log("Nenhum local com o ID correspondente foi encontrado.");
+          setDistanciaLocal(null); // Opcional: Limpa o estado se o local não for encontrado
         }
+
       } catch (error) {
-        console.error('Erro ao buscar dados do lixo reciclado:', error);
+        console.error('Erro ao buscar distância dos locais:', error);
+        setDistanciaLocal(null); // Em caso de erro, limpa o estado
       }
     };
 
     fetchDados();
-  }, [localId, userId]);
+  }, [localId]);
+
+  // Lógica para formatar a distância
+  const distanciaFormatada = distanciaLocal !== null
+    ? distanciaLocal < 1000
+      ? `${Math.round(distanciaLocal)} m`
+      : `${(distanciaLocal / 1000).toFixed(2)} km`
+    : 'Calculando...';
 
   return (
-    <View style={[styles.card, { borderColor: colors.primario, backgroundColor: colors.fundo }]}>
-      <Image source={{ uri: imageUri }} resizeMode='cover' style={styles.image} />
+    <TouchableOpacity style={[styles.card]}>
+      <Image
+        source={require('../assets/ponteiro-local.png')}
+        resizeMode="contain"
+      />
       <View style={styles.textContainer}>
-        <Text style={[styles.nome, { color: colors.primario }]}>{nome}</Text>
-        <Text style={[styles.endereco, { color: colors.secundario }]}>{endereco}</Text>
-        <Text style={[styles.lixoReciclado, { color: colors.primario }]}>
-          Total reciclado no local: {qtdLixo ?? '...'} g
-        </Text>
-        {userId && (
-          <Text style={[styles.lixoRecicladoUsuario, { color: colors.primario }]}>
-            Você reciclou aqui: {qtdUserLixo ?? '...'} g
-          </Text>
-        )}
+        <Text style={[styles.nome, { color: colors.branco }]}>{nome}</Text>
+        <Text style={[styles.endereco, { color: colors.branco }]} numberOfLines={2} ellipsizeMode='tail'>{endereco}</Text>
       </View>
-    </View>
+      <Text style={[styles.lixoRecicladoUsuario, { color: colors.branco }]}>{distanciaFormatada}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -64,12 +81,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
     marginBottom: 20,
-    borderWidth: 1,
-  },
-  image: {
-    width: 110,
-    height: 110,
-    borderRadius: 8,
   },
   textContainer: {
     flex: 1,

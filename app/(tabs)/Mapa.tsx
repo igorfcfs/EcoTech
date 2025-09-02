@@ -1,9 +1,11 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import { RootStackParamList } from '@/types/navigation';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import * as Location from 'expo-location';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Modalize } from 'react-native-modalize';
 import { API_URL } from '../../api';
@@ -34,6 +36,39 @@ export default function Mapa() {
 
   const modalizeRef = useRef<Modalize>(null);
   const mapRef = useRef<MapView>(null);
+
+  const { colors } = useTheme();    
+
+  const styles = StyleSheet.create({
+    container: { flex: 1 },
+    map: { ...StyleSheet.absoluteFillObject },
+    centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#f5f5f5' },
+    loadingText: { marginTop: 10, color: '#1B5E20', fontSize: 16 },
+    errorText: { color: '#d32f2f', marginBottom: 20, textAlign: 'center', fontSize: 16 },
+    modal: {
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      backgroundColor: colors.backCard,
+      paddingTop: 8,
+    },
+    modalContent: {
+      padding: 16,
+    },
+    sheetTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#fff',
+      marginBottom: 12,
+      alignSelf: 'center',
+      paddingHorizontal: 40
+    },
+    emptyText: {
+      fontSize: 14,
+      color: '#eee',
+      textAlign: 'center',
+    },
+  });
+
 
   const fetchLocais = async () => {
     try {
@@ -79,7 +114,7 @@ export default function Mapa() {
     };
 
     initialize();
-    const interval = setInterval(fetchLocais, 60000);
+    const interval = setInterval(fetchLocais, 3600000);
     return () => clearInterval(interval);
   }, []);
 
@@ -179,28 +214,46 @@ export default function Mapa() {
         ))}
       </MapView>
 
-      <Modalize ref={modalizeRef} adjustToContentHeight modalStyle={styles.modal} handlePosition="inside">
-        {selectedLocais && (
-          <View style={styles.modalContent}>
-            <CardLocais
-              imageUri={selectedLocais.imagem || ''}
-              nome={selectedLocais.nome}
-              endereco={selectedLocais.endereco}
-              localId={selectedLocais.id}
-            />
+      <Modalize 
+        ref={modalizeRef}
+        handleStyle={{
+          backgroundColor: colors.branco,  // cor do risquinho
+          width: 80,               // largura
+          height: 5,               // altura
+          borderRadius: 2.5,       // arredondar pontas
+        }}
+        modalHeight={700} // altura máxima quando puxar
+        alwaysOpen={300} // altura inicial fixa (50% da tela, ajusta conforme necessário)
+        handlePosition="inside"
+        modalStyle={styles.modal}
+        panGestureEnabled={true}
+        withHandle={true}
+        overlayStyle={{ backgroundColor: 'transparent' }} // deixa o fundo transparente
+        >
+        
+        <View style={styles.modalContent}>
+          <View>
+            <Text style={styles.sheetTitle}>Encontre pontos de coleta perto de você</Text>
           </View>
-        )}
+          <ScrollView>
+            {locais.length === 0 ? (
+              <Text style={styles.emptyText}>Nenhum ponto de coleta encontrado</Text>
+            ) : (
+              locais.map(local => (
+                <CardLocais
+                  key={local.id}
+                  localId={local.id}
+                  nome={local.nome}
+                  endereco={local.endereco}
+                  latitude={userLocation?.latitude}
+                  longitude={userLocation?.longitude}
+                />
+              ))
+            )}
+          </ScrollView>
+        </View>
       </Modalize>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  map: { ...StyleSheet.absoluteFillObject },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#f5f5f5' },
-  loadingText: { marginTop: 10, color: '#1B5E20', fontSize: 16 },
-  errorText: { color: '#d32f2f', marginBottom: 20, textAlign: 'center', fontSize: 16 },
-  modal: { borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: '#f5f5f5' },
-  modalContent: { padding: 20, paddingBottom: 30 },
-});

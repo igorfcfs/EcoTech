@@ -1,5 +1,6 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { StackScreenProps } from '@/types/navigation';
+import { Ionicons } from '@expo/vector-icons'; // ou 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
 import { signOut } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -135,11 +136,15 @@ export default function Perfil({ navigation }: Props) {
 
         {/* Header - Foto + Nome + Editar */}
         <ImageBackground source={require('../../../assets/bannerHome.png')} style={styles.banner}>
-          {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.avatar} />
-          ) : (
-            <Image source={require('../../../assets/default-avatar.png')} style={styles.avatar} />
-          )}
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '30%', marginBottom: 10}}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.avatar} />
+            ) : (
+              <Image source={require('../../../assets/default-avatar.png')} style={styles.avatar} />
+            )}
+            {/* <BotaoPrimario text="Settings" onPress={() => navigation.navigate('Configurações')} /> */}
+            <Ionicons name="settings-outline" size={40} color={colors.branco} onPress={() => navigation.navigate('Configurações')} style={{marginLeft: 70, marginBottom: 80}} />
+          </View>
           <Text style={styles.nome}>{nome}</Text>
           <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditarPerfil')}>
             <Text style={styles.editText}>EDITAR PERFIL</Text>
@@ -177,7 +182,6 @@ export default function Perfil({ navigation }: Props) {
           </TouchableOpacity> */}
         </View>
         
-        <BotaoPrimario text="Settings" onPress={() => navigation.navigate('Configurações')} />
         <BotaoPrimario text="Log out" onPress={handleLogout} />
 
       </ScrollView>

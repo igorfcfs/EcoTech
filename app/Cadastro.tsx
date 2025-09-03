@@ -98,9 +98,38 @@ export default function Cadastro({ navigation }: Props) {
     console.log('✅ Sincronização de UIDs concluída com sucesso.');
   }
 
+  function validarCPF(cpf: string): boolean {
+    // Remove caracteres não numéricos
+    cpf = cpf.replace(/\D/g, "");
+
+    // Verifica se tem 11 dígitos
+    if (cpf.length !== 11) return false;
+
+    // Rejeita CPFs com todos os dígitos iguais (ex: 11111111111)
+    if (/^(\d)\1+$/.test(cpf)) return false;
+
+    // Valida os dois dígitos verificadores
+    for (let j = 9; j < 11; j++) {
+      let soma = 0;
+      for (let i = 0; i < j; i++) {
+        soma += parseInt(cpf.charAt(i)) * (j + 1 - i);
+      }
+      let resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+      if (resto !== parseInt(cpf.charAt(j))) return false;
+    }
+
+    return true;
+  }
+
   async function signUp() {
     if (!cpf || !email || !senha || !nome || !sobrenome || !telefone) {
       Alert.alert('Erro', 'Preencha todos os campos!');
+      return;
+    }
+
+    if(!validarCPF(cpf)){
+      Alert.alert('Erro', 'CPF Inválido!');
       return;
     }
 

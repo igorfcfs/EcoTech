@@ -24,13 +24,13 @@ const CustomReciclarButton = () => {
 
 const styles = StyleSheet.create({
   reciclarButtonContainer: {
-    top: -20,
+    top: 5,
     justifyContent: 'center',
     alignItems: 'center',
   },
   reciclarButton: {
-    width: 70,
-    height: 70,
+    width: 40,
+    height: 40,
     borderRadius: 35,
     justifyContent: 'center',
     alignItems: 'center',
@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   reciclarIcon: {
-    width: 90,
-    height: 90,
+    width: 65,
+    height: 65,
     borderRadius: 35,
     resizeMode: 'cover',
     marginBottom: 5,

@@ -143,7 +143,7 @@ export default function Perfil({ navigation }: Props) {
               <Image source={require('../../../assets/default-avatar.png')} style={styles.avatar} />
             )}
             {/* <BotaoPrimario text="Settings" onPress={() => navigation.navigate('Configurações')} /> */}
-            <Ionicons name="settings-outline" size={40} color={colors.branco} onPress={() => navigation.navigate('Configurações')} style={{marginLeft: 70, marginBottom: 80}} />
+            <Ionicons name="settings-outline" size={40} color={'#fff'} onPress={() => navigation.navigate('Configurações')} style={{marginLeft: 70, marginBottom: 80}} />
           </View>
           <Text style={styles.nome}>{nome}</Text>
           <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditarPerfil')}>

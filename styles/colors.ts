@@ -10,7 +10,7 @@ export const Colors = {
 
     verdeCinza: '#bdbfaa',
     branco: '#000',
-    cinza: '#4c4c4c',
+    tabBar: '#ffffff',
     marrom: '#a6702e',
 
     fundo: '#ffffff',
@@ -29,7 +29,7 @@ export const Colors = {
 
     verdeCinza: '#bdbfaa',
     branco: '#f2f2f0',
-    cinza: '#4c4c4c',
+    tabBar: '#4c4c4c',
     marrom: '#a6702e',
 
     fundo: '#e6e8d6',

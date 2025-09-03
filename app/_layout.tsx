@@ -71,7 +71,7 @@ const AppContent = () => {
               headerStyle: { backgroundColor: colors.secundario },
               headerTintColor: '#fff',
               headerTitleStyle: { fontWeight: 'bold' },
-              title: 'Formulário',
+              title: 'Sua Carteira',
             }}
           />
           <Stack.Screen 

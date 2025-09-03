@@ -1,5 +1,5 @@
 import { useTheme } from '@/contexts/ThemeContext';
-import { RootStackParamList } from '@/types/navigation';
+import { RootStackParamList, StackScreenProps } from '@/types/navigation';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import * as Location from 'expo-location';
@@ -8,11 +8,12 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Modalize } from 'react-native-modalize';
-import { API_URL } from '../../api';
-import BotaoPrimario from '../../components/BotaoPrimario';
-import CardLocais from '../../components/CardLocais';
+import { API_URL } from '../../../api';
+import BotaoPrimario from '../../../components/BotaoPrimario';
+import CardLocais from '../../../components/CardLocais';
 
 type LocaisRouteProp = RouteProp<RootStackParamList, 'Locais'>;
+type Props = StackScreenProps<'Local'>;
 
 interface Local {
   id: string;
@@ -23,9 +24,9 @@ interface Local {
   coordenadas: { _latitude: number; _longitude: number };
 }
 
-export default function Mapa() {
+export default function Mapa({ navigation }: Props) {
   const route = useRoute<LocaisRouteProp>();
-  const { destinoLatitude, destinoLongitude } = route.params || {};
+  const { localId, destinoLatitude, destinoLongitude } = route.params || {};
 
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
@@ -247,6 +248,7 @@ export default function Mapa() {
                   endereco={local.endereco}
                   latitude={userLocation?.latitude}
                   longitude={userLocation?.longitude}
+                  onPress={() => navigation.navigate('Local', { localId: local.id })}
                 />
               ))
             )}

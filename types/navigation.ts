@@ -27,9 +27,10 @@ export type RootStackParamList = {
   Cadastro: undefined;
   Relatório: undefined; // TopTabNavigator
   Home: undefined;
-  Locais: { destinoLatitude: number; destinoLongitude: number } | undefined;
   Configurações: undefined;
   Histórico: undefined;
+  Local: { localId: string };
+  Mapa: { destinoLatitude: number; destinoLongitude: number, localId: string };
 };
 
 /**
@@ -41,6 +42,7 @@ export type BottomTabParamList = {
   Início: undefined;
   Relatório: undefined;
   Perfil: undefined;
+  Mapa: { destinoLatitude: number; destinoLongitude: number; localId: string };
 };
 
 /**

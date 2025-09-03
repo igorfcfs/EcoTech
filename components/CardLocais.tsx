@@ -1,4 +1,5 @@
 import { useTheme } from '@/contexts/ThemeContext';
+import { StackScreenProps } from '@/types/navigation';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -11,15 +12,18 @@ interface LocalComDistancia {
   // Adicione outras propriedades se existirem, como 'endereco', etc.
 }
 
+type Props = StackScreenProps<'Local'>;
+
 interface CardLocaisProps {
   localId: string;
   nome: string;
   endereco: string;
   latitude?: number;
   longitude?: number;
+  onPress: Props
 }
 
-const CardLocais = ({ localId, nome, endereco, latitude, longitude }: CardLocaisProps) => {
+const CardLocais = ({ localId, nome, endereco, latitude, longitude, onPress }: CardLocaisProps) => {
   const { colors } = useTheme(); // ✅ cores do tema atual
 
   const [distanciaLocal, setDistanciaLocal] = useState<number | null>(null);
@@ -58,7 +62,7 @@ const CardLocais = ({ localId, nome, endereco, latitude, longitude }: CardLocais
     : 'Calculando...';
 
   return (
-    <TouchableOpacity style={[styles.card]}>
+    <TouchableOpacity style={[styles.card]} onPress={onPress}>
       <Image
         source={require('../assets/ponteiro-local.png')}
         resizeMode="contain"

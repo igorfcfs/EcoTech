@@ -14,6 +14,7 @@ import Login from './Login';
 
 // Contexto de Tema
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import Local from './(tabs)/locais/Local';
 
 const Stack = createStackNavigator();
 
@@ -94,6 +95,17 @@ const AppContent = () => {
               headerTintColor: '#fff',
               headerTitleStyle: { fontWeight: 'bold' },
               title: 'Configurações',
+            }}
+          />
+          <Stack.Screen 
+            name='Local' 
+            component={Local} 
+            options={{
+              headerShown: true,
+              headerStyle: { backgroundColor: colors.secundario },
+              headerTintColor: '#fff',
+              headerTitleStyle: { fontWeight: 'bold' },
+              title: 'Local',
             }}
           />
         </>

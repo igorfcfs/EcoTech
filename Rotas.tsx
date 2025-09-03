@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 
 import HomeScreen from './app/(tabs)/index';
-import LocaisScreens from './app/(tabs)/Mapa';
 import PerfilScreen from './app/(tabs)/perfil/index';
 import CustomReciclarButton from './components/CustomReciclarButton';
+import LocaisNavigation from './LocaisNavigation';
 import RelatorioNavigation from './RelatorioNavigation';
 
 import { useTheme } from '@/contexts/ThemeContext';
@@ -61,7 +61,8 @@ export default function Rotas() {
       />
       <Tab.Screen
         name="Locais"
-        component={LocaisScreens}
+        component={LocaisNavigation}
+        // initialParams={{ destinoLatitude: 0, destinoLongitude: 0, localId: "" }}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons name="map-outline" size={24} color={focused ? colors.secundario : 'gray'} />

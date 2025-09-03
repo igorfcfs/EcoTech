@@ -1,6 +1,7 @@
+import Titulo from '@/components/Titulo';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getGeneralStyles } from '@/styles/general';
-import { StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 export default function ReciclarScreen() {
   const { colors } = useTheme();
@@ -16,7 +17,12 @@ export default function ReciclarScreen() {
   });
 
   return (
-    <View style={[general.container, { justifyContent: 'center', alignItems: 'center' }]}>
+    <View style={[general.container3]}>
+      <ImageBackground source={require('../../assets/bannerHome.png')} style={styles.banner}>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+            <Titulo text='ECoins disponíveis'/>
+          </View>
+        </ImageBackground>
       <Text style={styles.instructionText}>
         Vá até a lixeira mais próxima e preencha seus dados
       </Text>

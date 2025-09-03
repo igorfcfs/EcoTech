@@ -116,9 +116,11 @@ const HomeScreen = () => {
         longitude: location.coords.longitude,
       };
 
-      const localInfo = await axios.get(`${API_URL}/locais/local_mais_proximo?lat=${userCoords.latitude}&lng=-${userCoords.longitude}`);
-      setLocalId(localInfo.data.id_local)
+      const localInfo = await axios.get(`${API_URL}/locais/local_mais_proximo?lat=${userCoords.latitude}&lng=${userCoords.longitude}`);
+      setLocalId(localInfo.data.id_local);
       setNomeLocal(localInfo.data.nome_local);
+
+      console.log(userCoords.latitude, userCoords.longitude)
     } catch (error) {
       console.error('Erro ao buscar local mais próximo:', error);
     }

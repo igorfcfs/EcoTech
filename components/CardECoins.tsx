@@ -16,7 +16,7 @@ export default function CardECoins({ descricao, quantidade }: CardECoinsProps) {
   return (
     <Pressable
       style={[styles.card, { backgroundColor: colors.backCard }]}
-      onPress={() => navigation.navigate('Perfil')}
+      onPress={() => navigation.navigate('Reciclar')}
     >
       <Text style={[styles.cardTitle, { color: colors.titulo }]}>{descricao}</Text>
       <Image source={require('../assets/ECoin.png')} style={styles.coinImage} />

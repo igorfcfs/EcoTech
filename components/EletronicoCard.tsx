@@ -1,4 +1,5 @@
 import { useTheme } from '@/contexts/ThemeContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { doc, DocumentData, getDoc, Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -19,7 +20,7 @@ interface EletronicoCardProps {
 }
 
 export default function EletronicoCard({ item, vazio }: EletronicoCardProps) {
-  const { colors } = useTheme(); // ✅ Pega cores do tema atual
+  const { colors } = useTheme(); 
   const [nomeLocal, setNomeLocal] = useState<string>('Buscando...');
 
   useEffect(() => {
@@ -90,10 +91,40 @@ export default function EletronicoCard({ item, vazio }: EletronicoCardProps) {
       <View style={styles.info}>
         <Text style={[styles.tipo, { color: colors.secundario }]}>{item.categoria}</Text>
         <View style={styles.materiais}>
-          <Text style={[styles.material, { color: colors.branco }]}>Quantidade: {item.massa}g</Text>
-          <Text style={[styles.material, { color: colors.branco }]}>🗓️ Reciclado em: {dataFormatada}</Text>
-          <Text style={[styles.material, { color: colors.branco }]}>📍 Local: {nomeLocal}</Text>
-          <Text style={[styles.material, { color: colors.branco }]}>Pontos: {item.pontos || 0}</Text>
+          {/* Quantidade */}
+          <View style={styles.iconRow}>
+            <Ionicons name="cube-outline" size={16} color={colors.branco} />
+            <Text style={[styles.material, { color: colors.branco, marginLeft: 4 }]}>
+              Quantidade: {item.massa}g
+            </Text>
+          </View>
+
+          {/* Reciclado em */}
+          <View style={styles.iconRow}>
+            <Ionicons name="calendar-outline" size={16} color={colors.branco} />
+            <Text style={[styles.material, { color: colors.branco, marginLeft: 4 }]}>
+              Reciclado em: {dataFormatada}
+            </Text>
+          </View>
+
+          {/* Local */}
+          <View style={styles.iconRow}>
+            <Ionicons name="location-outline" size={16} color={colors.branco} />
+            <Text style={[styles.material, { color: colors.branco, marginLeft: 4 }]}>
+              Local: {nomeLocal}
+            </Text>
+          </View>
+
+          {/* E-coins */}
+          <View style={styles.pontosContainer}>
+            <Image 
+              source={require('../assets/ECoin.png')} 
+              style={styles.coinIcon} 
+            />
+            <Text style={[styles.material, { color: colors.branco }]}>
+              E-coins: {item.pontos || 0}
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -137,5 +168,19 @@ const styles = StyleSheet.create({
   },
   material: {
     fontSize: 13,
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pontosContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  coinIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
 });

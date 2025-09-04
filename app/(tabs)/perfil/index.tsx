@@ -174,7 +174,7 @@ export default function Perfil({ navigation }: Props) {
         {/* Outros */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Outros</Text>
-          <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Histórico')}>
+          <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Relatório')}>
             <Text style={styles.listItemText}>Histórico de reciclagem</Text>
           </TouchableOpacity>
           {/* <TouchableOpacity style={styles.listItem}>

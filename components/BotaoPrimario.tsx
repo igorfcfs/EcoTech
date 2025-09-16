@@ -14,7 +14,7 @@ export default function PrimaryButton({ text, onPress, style, textStyle }: Prima
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: colors.primario }, style]}
+      style={[styles.button, { backgroundColor: colors.negrito }, style]}
       onPress={onPress}
     >
       <Text style={[styles.buttonText, textStyle]}>{text}</Text>
@@ -24,20 +24,21 @@ export default function PrimaryButton({ text, onPress, style, textStyle }: Prima
 
 const styles = StyleSheet.create({
   button: {
-    width: '100%',
+    width: '70%',
     paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingHorizontal: 30,
+    borderRadius: 100,
     marginBottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
-    color: '#FFF',
+    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
     textAlignVertical: 'center',
     includeFontPadding: false,
+    paddingHorizontal: 10
   },
 });

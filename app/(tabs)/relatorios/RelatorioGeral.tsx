@@ -231,7 +231,7 @@ const RelatorioScreen = () => {
     .filter(item => item.porcentagem !== undefined && item.porcentagem > 0)
     .map((item, index) => ({
       name: item.categoria,
-      population: item.porcentagem,
+      population: Number(item.porcentagem) || 0,
       color: ['#98a260', '#5d672b', '#334f33', '#a9bb35ff', '#8c632c'][index % 5], // Cores mais próximas da imagem
       legendFontColor: '#333',
       legendFontSize: 13,

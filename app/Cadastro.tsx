@@ -1,3 +1,4 @@
+import Titulo from '@/components/Titulo';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getGeneralStyles } from '@/styles/general';
 import { StackScreenProps } from '@/types/navigation';
@@ -19,14 +20,13 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import { API_URL } from '../api';
 import BotaoPrimario from '../components/BotaoPrimario';
-import BotaoSecundario from '../components/BotaoSecundario';
 import Input from '../components/Input';
-import Titulo from '../components/Titulo';
 import { auth, db } from '../firebaseConfig'; // Importando Firebase Authentication
 
 type Props = StackScreenProps<'Cadastro'>;
@@ -40,7 +40,7 @@ export default function Cadastro({ navigation }: Props) {
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const general = getGeneralStyles(colors);
 
   async function sincronizarUIDs(oldUid: string, newUid: string) {
@@ -201,15 +201,44 @@ export default function Cadastro({ navigation }: Props) {
   }
 
   return (
-    <SafeAreaView style={general.container}>
-      {/* Logotipo */}
+    <>
+    <SafeAreaView style={general.autenticacao.header}>
+      <SafeAreaView style={{position: 'absolute', left: 10, alignItems: 'flex-start', marginBottom: 20}}>
+        <Titulo text='Crie uma conta' style={{color: colors.neutro, marginBottom: 0}} />
+        <Titulo text='para continuar' style={{color: colors.neutro}} />
+      </SafeAreaView>
       <Image
-        source={require('../assets/logo.png')}
-        style={general.logo}
+        source={
+          require('../assets/logo.png')
+        }
+        style={{marginLeft: 250, width: 120, height: 100, justifyContent: 'flex-end'}}
         resizeMode="contain"
       />
+    </SafeAreaView>
+    <SafeAreaView style={general.autenticacao.container}>
+      
+      {/* Botões Tabs */}
+      <View style={general.autenticacao.tabContainer}>
+        <TouchableOpacity
+          style={general.autenticacao.tab}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={general.autenticacao.tabText}>
+            Log In
+          </Text>
+        </TouchableOpacity>
 
-      <Titulo text="Cadastro" />
+        <TouchableOpacity
+          style={general.autenticacao.activeTabCadastro}
+          onPress={() => navigation.navigate('Cadastro')}
+        >
+          <Text style={general.autenticacao.activeTabText}>
+            Cadastrar
+          </Text>
+        </TouchableOpacity>
+      </View>
+      
+      {/* <Titulo text="Cadastro" /> */}
 
       {/* Campos de Cadastro */}
       <View style={styles.form}>
@@ -290,16 +319,16 @@ export default function Cadastro({ navigation }: Props) {
       
       {/* Botões */}
       <View style={{width: '98%', alignItems: 'center'}}>
-        <BotaoPrimario text="Cadastrar-se" onPress={signUp} />
-        <BotaoSecundario text="Já tem uma conta? Faça Login" onPress={() => navigation.navigate('Login')} />
+        <BotaoPrimario text="CADASTRAR" onPress={signUp} />
       </View>
     </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   form: {
-    marginBottom: 20,
+    marginVertical: 0,
     width: '100%'
   },
   row: {
@@ -324,5 +353,55 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     top: '50%',
     transform: [{ translateY: -40 }], // metade da altura do ícone
-  }, 
+  },
+
+  // precisa
+
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  header: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
+    backgroundColor: '#000',
+    paddingVertical: 30,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#555',
+    marginTop: 5,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    backgroundColor: '#000',
+    borderRadius: 50,
+    overflow: 'hidden',
+  },
+  tab: {
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  activeTab: {
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    backgroundColor: '#cde500',
+  },
+  activeTabText: {
+    color: '#000',
+  },
 });
+

@@ -1,3 +1,4 @@
+import Titulo from '@/components/Titulo';
 import { useTheme } from '@/contexts/ThemeContext';
 import { StackScreenProps } from '@/types/navigation';
 import axios from 'axios';
@@ -46,7 +47,7 @@ export default function EditarPerfil({ navigation }: Props) {
     scroll: { padding: 0},
     header: { alignItems: 'center', marginBottom: 20 },
     avatar: { width: 120, height: 120, borderRadius: 60, marginBottom: 10 },
-    campo: { fontSize: 20, fontWeight: 'bold', marginBottom: 10, color: colors.branco, padding: 10, backgroundColor: colors.backgroundSecundario, borderRadius: 10 },
+    campo: { fontSize: 20, marginBottom: 15, color: colors.titulo, padding: 10, backgroundColor: colors.backCard, borderRadius: 10, borderColor: "#414c41" },
     editButton: {
       paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, borderWidth: 1,
       backgroundColor: colors.backCard
@@ -239,11 +240,17 @@ export default function EditarPerfil({ navigation }: Props) {
           </TouchableOpacity>
         </ImageBackground>
         
-        <View style={{marginVertical: 70, marginHorizontal: 15, gap: 15}}>
+        <View style={{marginVertical: 20, marginHorizontal: 15, gap: 0}}>
+          <Titulo text='Nome' style={{alignSelf: 'flex-start'}} />
           <Input placeholder="Digite seu novo nome" value={nome} style={styles.campo} onChangeText={(newName) => setNome(newName)} />
+          
+          <Titulo text='Email' style={{alignSelf: 'flex-start'}} />
           <Input placeholder="Digite seu novo email" value={email} style={styles.campo} onChangeText={(newEmail) => setEmail(newEmail)} />
+          
+          <Titulo text='Telefone' style={{alignSelf: 'flex-start'}} />
           <Input placeholder="Digite seu novo telefone" value={telefone} style={styles.campo} onChangeText={(newPhone) => setTelefone(newPhone)} />
-          <BotaoPrimario text={"SALVAR ALTERAÇÕES"} onPress={handleSalvarAlteracoes} style={{marginTop: 50}} />
+          
+          <BotaoPrimario text={"SALVAR ALTERAÇÕES"} onPress={handleSalvarAlteracoes} style={{marginTop: 20}} />
         </View>
 
       </ScrollView>

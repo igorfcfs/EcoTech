@@ -8,6 +8,16 @@ type GenericStyle = ViewStyle | TextStyle | ImageStyle;
 
 export interface GeneralStyles {
   logo: ViewStyle;
+  autenticacao: {
+    container: ViewStyle;
+    header: ViewStyle;
+    tabContainer: ViewStyle;
+    tab: ViewStyle;
+    tabText: TextStyle;
+    activeTabLogIn: ViewStyle;
+    activeTabCadastro: ViewStyle;
+    activeTabText: TextStyle;
+  };
   tabBar: ViewStyle;
   container: ViewStyle;
   container2: ViewStyle;
@@ -43,6 +53,53 @@ export const getGeneralStyles = (colors: ColorsType): GeneralStyles => ({
     marginBottom: 30,
     width: 300,
     height: 200,
+  },
+  autenticacao: {
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: colors.backgroundAuth,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
+    header: {
+      alignItems: 'flex-end',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      width: '100%',
+      backgroundColor: '#000',
+      paddingVertical: 30,
+    },
+    tabContainer: {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      backgroundColor: '#000',
+      borderRadius: 50,
+      overflow: 'hidden',
+      marginBottom: 50,
+    },
+    tab: {
+      paddingVertical: 10,
+      paddingHorizontal: 50,
+    },
+    tabText: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#555',
+    },
+    activeTabLogIn: {
+      paddingVertical: 10,
+      paddingHorizontal: 60,
+      backgroundColor: colors.negrito,
+    },
+    activeTabCadastro: {
+      paddingVertical: 10,
+      paddingHorizontal: 44,
+      backgroundColor: colors.negrito,
+    },
+    activeTabText: {
+      color: '#000',
+    },
   },
   tabBar: {
     flex: 1,
@@ -94,12 +151,12 @@ export const getGeneralStyles = (colors: ColorsType): GeneralStyles => ({
   textInputs: {
     input: {
       width: '100%',
-      backgroundColor: colors.backCard,
+      backgroundColor: colors.inverso,
       borderWidth: 1,
       borderColor: colors.primario,
-      color: colors.primario,
-      borderRadius: 5,
-      padding: 15,
+      color: colors.branco,
+      borderRadius: 100,
+      padding: 12,
       fontSize: fonts.input,
       marginBottom: metrics.tripleSmallMargin,
     },

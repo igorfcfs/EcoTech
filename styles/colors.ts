@@ -13,11 +13,17 @@ export const Colors = {
     tabBar: '#ffffff',
     marrom: '#a6702e',
 
+    neutro: '#fff',
+    inverso: '#fff',
+
+    texto: '#a7aca7',
     fundo: '#ffffff',
     titulo: '#000',
     negrito: '#d1e53d',
     backCard: '#f2f2f0',
     backCardLixoReciclado: '#cbd29b',
+    
+    backgroundAuth: "#d9d9d9",
 
     background: '#ffffff',
     backgroundSecundario: '#e6e8d6',
@@ -32,12 +38,18 @@ export const Colors = {
     tabBar: '#4c4c4c',
     marrom: '#a6702e',
 
+    texto: '#a7aca7',
     fundo: '#e6e8d6',
+
+    neutro: '#fff',
+    inverso: '#000',
 
     titulo: '#fff',
     negrito: '#d1e53d',
     backCard: '#222f22',
     backCardLixoReciclado: '#cbd29b',
+
+    backgroundAuth: "#8e9556",
 
     background: '#141C14',
     backgroundSecundario: '#E6E8D6',

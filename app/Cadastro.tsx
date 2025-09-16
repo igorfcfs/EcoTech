@@ -40,7 +40,7 @@ export default function Cadastro({ navigation }: Props) {
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const general = getGeneralStyles(colors);
 
   async function sincronizarUIDs(oldUid: string, newUid: string) {
@@ -204,7 +204,11 @@ export default function Cadastro({ navigation }: Props) {
     <SafeAreaView style={general.container}>
       {/* Logotipo */}
       <Image
-        source={require('../assets/logo.png')}
+        source={
+          theme === 'dark'
+            ? require('../assets/logo.png')
+            : require('../assets/logo-dark.png')
+        }
         style={general.logo}
         resizeMode="contain"
       />

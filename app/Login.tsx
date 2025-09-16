@@ -15,7 +15,7 @@ import { getGeneralStyles } from '../styles/general';
 type Props = StackScreenProps<'Login'>;
 
 export default function Login({ navigation }: Props) {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const general = getGeneralStyles(colors);
   
   const [email, setEmail] = useState('');
@@ -73,7 +73,11 @@ export default function Login({ navigation }: Props) {
   return (
     <View style={general.container2}>
       <Image
-        source={require('../assets/logo.png')}
+        source={
+          theme === 'dark'
+            ? require('../assets/logo.png')
+            : require('../assets/logo-dark.png')
+        }
         style={general.logo}
         resizeMode="contain"
       />

@@ -82,11 +82,13 @@ export default function Login({ navigation }: Props) {
         resizeMode="contain"
       />
 
-      <Titulo text="Login" />
 
       {/* Campos */}
       <View style={{width: '100%', marginBottom: 20}}>
+        <Titulo text="Email" style={{alignSelf: 'flex-start', fontSize: 20, marginBottom: 3}} />
         <Input placeholder="Insira seu email" keyboardType="email-address" secureTextEntry={false} value={email} onChangeText={setEmail} autoCapitalize="none" />
+        
+        <Titulo text="Senha" style={{alignSelf: 'flex-start', fontSize: 20, marginBottom: 3}} />
         {/* Senha com botão olho */}
         <View style={general.passwordContainer}>
           <Input

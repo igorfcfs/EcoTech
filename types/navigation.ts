@@ -25,6 +25,7 @@ export type RootStackParamList = {
   EditarPerfil: undefined;
   Login: undefined;
   Cadastro: undefined;
+  Autenticacao: undefined;
   Relatório: undefined; // TopTabNavigator
   Home: undefined;
   Configurações: undefined;
@@ -43,6 +44,17 @@ export type BottomTabParamList = {
   Relatório: undefined;
   Perfil: undefined;
   Mapa: { destinoLatitude: number; destinoLongitude: number; localId: string };
+};
+
+/**
+ * ===============================
+ * MATERIAL TOP TABS (se houver)
+ * ===============================
+ */
+export type MaterialTopTabsParamList = {
+  Login: undefined;
+  Cadastro: undefined;
+  Autenticacao: undefined;
 };
 
 /**

@@ -5,12 +5,11 @@ import { StyleSheet, Text, View } from "react-native";
 import { auth } from "../firebaseConfig";
 
 // Screens
+import AutenticacaoNavigation from '../AutenticacaoNavigation';
 import Rotas from '../Rotas';
 import EditarPerfil from './(tabs)/perfil/EditarPerfil';
 import ReciclarScreen from "./(tabs)/Reciclar";
-import Cadastro from './Cadastro';
 import Configuracoes from './Configuracoes';
-import Login from './Login';
 
 // Contexto de Tema
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
@@ -111,8 +110,7 @@ const AppContent = () => {
         </>
       ) : (
         <>
-          <Stack.Screen name='Login' component={Login} />
-          <Stack.Screen name='Cadastro' component={Cadastro} />
+          <Stack.Screen name='Autenticação' component={AutenticacaoNavigation} />
           <Stack.Screen name='Rotas' component={Rotas} />
         </>
       )}

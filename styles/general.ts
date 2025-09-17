@@ -94,12 +94,12 @@ export const getGeneralStyles = (colors: ColorsType): GeneralStyles => ({
   textInputs: {
     input: {
       width: '100%',
-      backgroundColor: colors.backCard,
+      backgroundColor: colors.background,
       borderWidth: 1,
       borderColor: colors.primario,
       color: colors.primario,
-      borderRadius: 5,
-      padding: 15,
+      borderRadius: 100,
+      padding: 12,
       fontSize: fonts.input,
       marginBottom: metrics.tripleSmallMargin,
     },

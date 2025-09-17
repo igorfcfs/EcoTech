@@ -179,7 +179,7 @@ export default function Cadastro({ navigation }: Props) {
       }
 
       Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
-      navigation.navigate('Login');
+      navigation.navigate('Autenticacao');
       
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -295,7 +295,7 @@ export default function Cadastro({ navigation }: Props) {
       {/* Botões */}
       <View style={{width: '98%', alignItems: 'center'}}>
         <BotaoPrimario text="Cadastrar-se" onPress={signUp} />
-        <BotaoSecundario text="Já tem uma conta? Faça Login" onPress={() => navigation.navigate('Login')} />
+        <BotaoSecundario text="Já tem uma conta? Faça Login" onPress={() => navigation.navigate('Autenticacao')} />
       </View>
     </SafeAreaView>
   );

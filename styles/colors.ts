@@ -9,6 +9,7 @@ export const Colors = {
     terciario: '#1c1c1c', // Preto
 
     verdeCinza: '#bdbfaa',
+    texto: '#a7aca7',
     branco: '#000',
     tabBar: '#ffffff',
     marrom: '#a6702e',
@@ -28,6 +29,7 @@ export const Colors = {
     terciario: '#1c1c1c',
 
     verdeCinza: '#bdbfaa',
+    texto: '#a7aca7',
     branco: '#f2f2f0',
     tabBar: '#4c4c4c',
     marrom: '#a6702e',

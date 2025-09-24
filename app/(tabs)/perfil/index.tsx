@@ -163,11 +163,8 @@ export default function Perfil({ navigation }: Props) {
           <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Locais')}>
             <Text style={styles.listItemText}>Ver pontos de coleta próximos</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Configurações')}>
-            <Text style={styles.listItemText}>Ver carteira de E-coins</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Reciclar')}>
-            <Text style={styles.listItemText}>Reciclar e-lixo</Text>
+            <Text style={styles.listItemText}>Ver carteira de E-coins</Text>
           </TouchableOpacity>
         </View>
 

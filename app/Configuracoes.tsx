@@ -2,22 +2,60 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getGeneralStyles } from '@/styles/general';
 import { StackScreenProps } from '@/types/navigation';
 import React from 'react';
-import { FlatList, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { API_URL } from '../api';
+import { auth } from '../firebaseConfig';
+
+const user = auth.currentUser;
 
 type Props = StackScreenProps<"Configurações">;
 
-export default function Configuracoes({}: Props) {
+export default function Configuracoes({navigation}: Props) {
   const { colors, theme, toggleTheme } = useTheme();
   const styles = getGeneralStyles(colors);
 
   // Define se o tema atual é dark
   const isDark = theme === 'dark';
 
+  const deleteAccount = async () => {
+    try {
+      const response = await fetch(`${API_URL}/users/${user?.uid}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error("Erro ao deletar conta");
+
+      Alert.alert("Conta excluída", "Sua conta foi removida com sucesso.", [
+        { text: "OK", onPress: () => navigation.replace("Login") }
+      ]);
+    } catch (err) {
+      Alert.alert("Erro", "Não foi possível excluir sua conta. Tente novamente.");
+      console.error(err);
+    }
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Deletar conta",
+      "Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Sim, excluir", style: "destructive", onPress: deleteAccount },
+      ]
+    );
+  };
+
   // Itens da lista de configurações
   const settings = [
     { id: '1', title: 'Tema escuro', type: 'switch', action: toggleTheme },
-    { id: '2', title: 'Notificações', type: 'switch', value: true, action: () => {} },
+    // { id: '2', title: 'Notificações', type: 'switch', value: true, action: () => {} },
     { id: '3', title: 'Sobre o App', type: 'link', action: () => {} },
+    { id: '4', title: 'Política de Privacidade', type: 'link', action: () => {} },
+    { id: '5', title: 'Termos de Serviço', type: 'link', action: () => {} },
+    { id: '6', title: 'Deletar Conta', type: 'link', action: confirmDelete, isDestructive: true },
   ];
 
   // Renderização de cada item
@@ -66,7 +104,6 @@ export default function Configuracoes({}: Props) {
   );
 }
 
-// Estilos customizados para os itens
 const customStyles = StyleSheet.create({
   item: {
     flexDirection: 'row',

@@ -20,7 +20,7 @@ import {
 import { API_URL } from '../../../api';
 import BotaoPrimario from '../../../components/BotaoPrimario';
 import Input from '../../../components/Input';
-import { auth, db } from '../../../firebaseConfig';
+import { auth, db, firebaseConfig } from '../../../firebaseConfig';
 
 type Props = StackScreenProps<'EditarPerfil'>;
 
@@ -104,7 +104,7 @@ export default function EditarPerfil({ navigation }: Props) {
       const blob = await response_img.blob(); // converte para blob
 
       const storage = getStorage();
-      const filename = `gs://ecotrash-v2.firebasestorage.app/profile/${user.uid}/photo.jpg`;
+      const filename = `gs://${firebaseConfig.projectId}.firebasestorage.app/profile/${user.uid}/photo.jpg`;
       const imageRef = ref(storage, filename);
 
       await uploadBytes(imageRef, blob); // faz upload do blob pro Firebase
@@ -240,7 +240,7 @@ export default function EditarPerfil({ navigation }: Props) {
           </TouchableOpacity>
         </ImageBackground>
         
-        <View style={{marginVertical: 20, marginHorizontal: 15, gap: 0}}>
+        <View style={{marginVertical: 20, marginHorizontal: 15, gap: 0, justifyContent: 'center', alignItems: 'center'}}>
           <Titulo text='Nome' style={{alignSelf: 'flex-start'}} />
           <Input placeholder="Digite seu novo nome" value={nome} style={styles.campo} onChangeText={(newName) => setNome(newName)} />
           
@@ -250,7 +250,7 @@ export default function EditarPerfil({ navigation }: Props) {
           <Titulo text='Telefone' style={{alignSelf: 'flex-start'}} />
           <Input placeholder="Digite seu novo telefone" value={telefone} style={styles.campo} onChangeText={(newPhone) => setTelefone(newPhone)} />
           
-          <BotaoPrimario text={"SALVAR ALTERAÇÕES"} onPress={handleSalvarAlteracoes} style={{marginTop: 20}} />
+          <BotaoPrimario text={"SALVAR ALTERAÇÕES"} style={{alignSelf: 'center'}} onPress={handleSalvarAlteracoes} style={{marginTop: 20}} />
         </View>
 
       </ScrollView>

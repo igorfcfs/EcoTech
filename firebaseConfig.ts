@@ -6,11 +6,11 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZpWlEhATHihNF7l1Suw3SeL2ZlKJvP6E",
-  authDomain: "ecotrash-v2.firebaseapp.com",
-  projectId: "ecotrash-v2",
-  storageBucket: "ecotrash-v2.appspot.com",
-  appId: "1:68905272825:android:66c9c45dce2957c8066928",
+  apiKey: "AIzaSyD3LD3f1kKxK_B8ChnbwC5yLd5YUJAXe84",
+  authDomain: "ecotech-64860.firebaseapp.com",
+  projectId: "ecotech-64860",
+  storageBucket: "ecotech-64860.appspot.com",
+  appId: "1:756196447902:android:89155cf2ba27c447d4cd8f",
 };
 
 // Inicializa o Firebase
@@ -23,6 +23,6 @@ const auth = initializeAuth(app, {
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, db, storage };
+export { auth, db, firebaseConfig, storage };
 
 

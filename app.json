@@ -1,15 +1,20 @@
 {
   "expo": {
     "name": "EcoTech",
-    "slug": "ecotrash_v2",
+    "slug": "ecotech",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
-    "scheme": "ecotech",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ecotech.ecotech",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBY_hRkr-lBjKAKfk2AriUauc2TIWyBZqc"
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,10 +24,10 @@
       "edgeToEdgeEnabled": true,
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyCBakrF6a0PwuRoKd_oP5rGzKbyeDuBiOY"
+          "apiKey": "AIzaSyBY_hRkr-lBjKAKfk2AriUauc2TIWyBZqc"
         }
       },
-      "package": "com.igorfcfs.ecotrash_v2"
+      "package": "com.ecotech.ecotech"
     },
     "web": {
       "bundler": "metro",
@@ -45,15 +50,11 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "aba767d0-22d1-4961-888c-efcc29f50328"
+        "projectId": "b2cad131-a226-4ffd-98aa-9378ddf36b61"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/aba767d0-22d1-4961-888c-efcc29f50328"
-    }
+    "owner": "igorfcfs"
   }
 }

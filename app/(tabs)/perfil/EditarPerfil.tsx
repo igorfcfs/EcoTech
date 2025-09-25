@@ -20,7 +20,7 @@ import {
 import { API_URL } from '../../../api';
 import BotaoPrimario from '../../../components/BotaoPrimario';
 import Input from '../../../components/Input';
-import { auth, db } from '../../../firebaseConfig';
+import { auth, db, firebaseConfig } from '../../../firebaseConfig';
 
 type Props = StackScreenProps<'EditarPerfil'>;
 
@@ -104,7 +104,7 @@ export default function EditarPerfil({ navigation }: Props) {
       const blob = await response_img.blob(); // converte para blob
 
       const storage = getStorage();
-      const filename = `gs://ecotrash-v2.firebasestorage.app/profile/${user.uid}/photo.jpg`;
+      const filename = `gs://${firebaseConfig.projectId}.firebasestorage.app/profile/${user.uid}/photo.jpg`;
       const imageRef = ref(storage, filename);
 
       await uploadBytes(imageRef, blob); // faz upload do blob pro Firebase

@@ -179,7 +179,7 @@ export default function Perfil({ navigation }: Props) {
           </TouchableOpacity> */}
         </View>
         
-        <BotaoPrimario text="Log out" onPress={handleLogout} />
+        <BotaoPrimario text="Log out" style={{alignSelf: 'center'}} onPress={handleLogout} />
 
       </ScrollView>
     </SafeAreaView>

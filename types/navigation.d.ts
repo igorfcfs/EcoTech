@@ -22,6 +22,7 @@ export type RootStackParamList = {
   EditarPerfil: undefined;
   Login: undefined;
   Cadastro: undefined;
+  TermosDeUso: undefined;
   Relatório: undefined; // aqui vai abrir o TopTabNavigator
   Home: undefined;
   Mapa: { destinoLatitude: number; destinoLongitude: number; localId: string };

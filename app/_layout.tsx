@@ -11,6 +11,7 @@ import ReciclarScreen from "./(tabs)/Reciclar";
 import Cadastro from './Cadastro';
 import Configuracoes from './Configuracoes';
 import Login from './Login';
+import TermosDeUso from './TermosDeUso';
 
 // Contexto de Tema
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
@@ -113,6 +114,7 @@ const AppContent = () => {
         <>
           <Stack.Screen name='Login' component={Login} />
           <Stack.Screen name='Cadastro' component={Cadastro} />
+          <Stack.Screen name='TermosDeUso' component={TermosDeUso} />
           <Stack.Screen name='Rotas' component={Rotas} />
         </>
       )}

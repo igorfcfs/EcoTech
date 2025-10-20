@@ -2,6 +2,7 @@ import Titulo from '@/components/Titulo';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getGeneralStyles } from '@/styles/general';
 import { StackScreenProps } from '@/types/navigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { FirebaseError } from 'firebase/app';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -14,7 +15,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -24,6 +25,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Checkbox } from 'react-native-paper';
 import { API_URL } from '../api';
 import BotaoPrimario from '../components/BotaoPrimario';
 import Input from '../components/Input';
@@ -38,7 +40,31 @@ export default function Cadastro({ navigation }: Props) {
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+  const [aceitou, setAceitou] = useState(false);
+
+  useEffect(() => {
+    const carregar = async () => {
+      try {
+        const valorSalvo = await AsyncStorage.getItem('@aceitou_termos');
+        if (valorSalvo !== null) setAceitou(JSON.parse(valorSalvo));
+      } catch (e) {
+        console.log('Erro ao carregar estado:', e);
+      }
+    };
+    carregar();
+  }, []);
+
+  const toggle = async (novoValor: any) => {
+    try {
+      setAceitou(novoValor);
+      await AsyncStorage.setItem('@aceitou_termos', JSON.stringify(novoValor));
+    } catch (e) {
+      console.log('Erro ao salvar estado:', e);
+    }
+  };
 
   const { colors, theme } = useTheme();
   const general = getGeneralStyles(colors);
@@ -130,6 +156,16 @@ export default function Cadastro({ navigation }: Props) {
 
     if(!validarCPF(cpf)){
       Alert.alert('Erro', 'CPF Inválido!');
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem!');
+      return;
+    }
+
+    if (!aceitou) {
+      Alert.alert('Erro', 'Você precisa aceitar os termos de uso!');
       return;
     }
 
@@ -315,6 +351,48 @@ export default function Cadastro({ navigation }: Props) {
             />
           </TouchableOpacity>
         </View>
+
+        {/* Confirmar senha */}
+        <View style={general.passwordContainer}>
+          <Input
+            placeholder="Confirme sua senha"
+            secureTextEntry={!mostrarConfirmarSenha}
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}
+            style={general.passwordInput}
+            autoCapitalize="none"
+          />
+          <TouchableOpacity
+            style={general.eyeButton}
+            onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+            activeOpacity={0.7}
+          >
+            <Image
+              source={
+                mostrarConfirmarSenha
+                  ? require('../assets/icons/visible.png')
+                  : require('../assets/icons/non-visible.png')
+              }
+              style={general.eyeIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.checkboxContainer}>
+          <Checkbox
+            status={aceitou ? 'checked' : 'unchecked'}
+            onPress={() => toggle(!aceitou)}
+            color="#4CAF50"
+          />
+          <Text style={styles.label}>
+            Aceito os{' '}
+            <Text
+              style={styles.link}
+              onPress={() => navigation.navigate('TermosDeUso')}
+            >
+              Termos de Uso
+            </Text>
+          </Text>
+        </View>
       </View>
       
       {/* Botões */}
@@ -354,7 +432,24 @@ const styles = StyleSheet.create({
     top: '50%',
     transform: [{ translateY: -40 }], // metade da altura do ícone
   },
-
+  //
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  label: {
+    fontSize: 16,
+  },
+  status: {
+    marginTop: 20,
+    fontSize: 16,
+    color: '#555',
+  },
+  link: {
+    color: '#007BFF',     // Azul padrão de link
+    textDecorationLine: 'underline',
+    fontWeight: '500',
+  },
   // precisa
 
   container: {

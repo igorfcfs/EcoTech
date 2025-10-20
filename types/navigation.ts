@@ -25,6 +25,7 @@ export type RootStackParamList = {
   EditarPerfil: undefined;
   Login: undefined;
   Cadastro: undefined;
+  TermosDeUso: undefined;
   Relatório: undefined; // TopTabNavigator
   Home: undefined;
   Configurações: undefined;

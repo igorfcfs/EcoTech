@@ -73,7 +73,7 @@ export const getGeneralStyles = (colors: ColorsType): GeneralStyles => ({
     tabContainer: {
       flexDirection: 'row',
       alignSelf: 'center',
-      backgroundColor: '#000',
+      backgroundColor: colors.inverso,
       borderRadius: 50,
       overflow: 'hidden',
       marginBottom: 50,

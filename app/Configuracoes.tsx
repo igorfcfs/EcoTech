@@ -1,22 +1,33 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { getGeneralStyles } from '@/styles/general';
 import { StackScreenProps } from '@/types/navigation';
-import React, { useState } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { API_URL } from '../api';
-import { ModalError, ModalInfo, ModalSuccess } from '../components/CustomModal'; // ajuste caminho
+import { ModalError, ModalInfo, ModalSuccess } from '../components/CustomModal';
 import { auth } from '../firebaseConfig';
 
-const user = auth.currentUser;
-
-type Props = StackScreenProps<"Configurações">;
+type Props = StackScreenProps<'Configurações'>;
 
 export default function Configuracoes({ navigation }: Props) {
   const { colors, theme, toggleTheme } = useTheme();
   const styles = getGeneralStyles(colors);
   const isDark = theme === 'dark';
 
+  // Estado do usuário autenticado
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return unsubscribe;
+  }, []);
+
+  // -----------------------------
   // Estados dos modais
+  // -----------------------------
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -28,18 +39,34 @@ export default function Configuracoes({ navigation }: Props) {
   // -----------------------------
   const deleteAccount = async () => {
     try {
-      const response = await fetch(`${API_URL}/users/${user?.uid}`, {
+      if (!currentUser) throw new Error('Usuário não autenticado.');
+
+      const uid = currentUser.uid; // guarda antes de deletar do Firebase
+
+      // 1️⃣ Deleta do Firebase Authentication primeiro
+      await currentUser.delete();
+
+      // 2️⃣ Agora deleta do backend usando o uid guardado
+      const response = await fetch(`${API_URL}/users/${uid}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (!response.ok) throw new Error("Erro ao deletar conta");
+      if (!response.ok) throw new Error('Erro ao deletar conta no servidor.');
 
-      setSuccessMessage("Sua conta foi removida com sucesso.");
+      // 3️⃣ Mostra modal de sucesso
+      setSuccessMessage('Sua conta foi removida com sucesso.');
       setShowSuccessModal(true);
-    } catch (err) {
+
+    } catch (err: any) {
       console.error(err);
-      setErrorMessage("Não foi possível excluir sua conta. Tente novamente.");
+
+      if (err.code === 'auth/requires-recent-login') {
+        setErrorMessage('Por segurança, faça login novamente antes de excluir sua conta.');
+      } else {
+        setErrorMessage('Não foi possível excluir sua conta. Tente novamente.');
+      }
+
       setShowErrorModal(true);
     }
   };
@@ -109,17 +136,31 @@ export default function Configuracoes({ navigation }: Props) {
 
   return (
     <View style={styles.container3}>
-      {/* ----------------- Modais ----------------- */}
+      {/* ----------------- Modal de Sucesso ----------------- */}
       <ModalSuccess
         visible={showSuccessModal}
         title="Conta excluída"
         message={successMessage}
-        onClose={() => {
+        onClose={async () => {
           setShowSuccessModal(false);
-          navigation.replace("Login");
+
+          // Limpa estado local
+          setCurrentUser(null);
+
+          // Desloga do Firebase
+          await signOut(auth);
+
+          // Aguarda o modal sumir antes de navegar
+          setTimeout(() => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          }, 1000);
         }}
       />
 
+      {/* ----------------- Modal de Erro ----------------- */}
       <ModalError
         visible={showErrorModal}
         title="Erro"
@@ -127,6 +168,7 @@ export default function Configuracoes({ navigation }: Props) {
         onClose={() => setShowErrorModal(false)}
       />
 
+      {/* ----------------- Modal de Confirmação ----------------- */}
       <ModalInfo
         visible={showConfirmDelete}
         title="Deletar conta"
@@ -139,17 +181,31 @@ export default function Configuracoes({ navigation }: Props) {
       >
         <View style={{ flexDirection: 'row', marginTop: 20 }}>
           <TouchableOpacity
-            style={{ flex: 1, marginRight: 10, padding: 12, backgroundColor: '#ccc', borderRadius: 8 }}
+            style={{
+              flex: 1,
+              marginRight: 10,
+              padding: 12,
+              backgroundColor: '#ccc',
+              borderRadius: 8,
+            }}
             onPress={() => setShowConfirmDelete(false)}
           >
             <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>Cancelar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{ flex: 1, marginLeft: 10, padding: 12, backgroundColor: '#f44336', borderRadius: 8 }}
+            style={{
+              flex: 1,
+              marginLeft: 10,
+              padding: 12,
+              backgroundColor: '#f44336',
+              borderRadius: 8,
+            }}
             onPress={handleDeleteConfirmed}
           >
-            <Text style={{ textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>Sim, excluir</Text>
+            <Text style={{ textAlign: 'center', color: '#fff', fontWeight: 'bold' }}>
+              Sim, excluir
+            </Text>
           </TouchableOpacity>
         </View>
       </ModalInfo>
@@ -160,7 +216,7 @@ export default function Configuracoes({ navigation }: Props) {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={{ paddingVertical: 20 }}
-        extraData={theme} // atualiza a lista ao mudar o tema
+        extraData={theme}
       />
     </View>
   );

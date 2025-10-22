@@ -145,7 +145,7 @@ export default function Login({ navigation }: Props) {
       {/*Botões*/}
       <View style={{width: '98%', alignItems: 'center'}}>
         <BotaoPrimario text="ENTRAR" onPress={signIn} />
-        <BotaoLink text="Esqueci a senha" onPress={() => /*navigation.navigate('RecuperarSenha')*/ console.log('Recuperar senha em desenvolvimento')} />
+        <BotaoLink text="Esqueci a senha" onPress={() => navigation.navigate('RecuperarSenha')} />
       </View>
     </View>
     </>

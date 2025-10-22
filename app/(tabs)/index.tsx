@@ -21,7 +21,7 @@ const HomeScreen = () => {
   const [qtdLixo, setQtdLixo] = useState(null);
   const [qtdUserLixo, setQtdUserLixo] = useState(null);
   const [nomeLocal, setNomeLocal] = useState(null);
-  const [nome, setNome] = useState(null);
+  const [nome, setNome] = useState('Usuário');
   
   const { colors } = useTheme();
   const general = getGeneralStyles(colors);
@@ -178,7 +178,7 @@ const HomeScreen = () => {
       <ImageBackground source={require('../../assets/bannerHome.png')} style={styles.banner}>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           <View style={{ justifyContent: 'center', marginRight: 10, marginLeft: 10 }}>
-            <Text style={{ fontSize: 30, color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Bem vindo, {nome}</Text>
+            <Text style={{ fontSize: 30, color: 'white', fontWeight: 'bold', textAlign: 'center' }}>Bem vindo, {nome.split(' ')[0]}</Text>
             <Text style={styles.subtitle}>Vamos reciclar juntos.</Text>
           </View>
           <Image

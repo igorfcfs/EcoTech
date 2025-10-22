@@ -164,7 +164,7 @@ export default function Cadastro({ navigation }: Props) {
   }
 
   async function signUp() {
-    if (!cpf || !email || !senha || !nome || !sobrenome || !telefone) {
+    if (!cpf || !email || !senha || !nome || !telefone) {
       Alert.alert('Erro', 'Preencha todos os campos!');
       return;
     }
@@ -203,12 +203,12 @@ export default function Cadastro({ navigation }: Props) {
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       const user = userCredential.user;
-
+      
       const userData = {
         uid: user.uid,
         cpf,
         nome,
-        sobrenome,
+        sobrenome: '',
         telefone,
         email,
         fotoPerfil: ''

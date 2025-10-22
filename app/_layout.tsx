@@ -10,7 +10,9 @@ import EditarPerfil from './(tabs)/perfil/EditarPerfil';
 import ReciclarScreen from "./(tabs)/Reciclar";
 import Cadastro from './Cadastro';
 import Configuracoes from './Configuracoes';
+import ConfirmacaoReset from './ConfirmacaoReset';
 import Login from './Login';
+import RecuperarSenha from './RecuperarSenha';
 import TermosDeUso from './TermosDeUso';
 
 // Contexto de Tema
@@ -114,6 +116,8 @@ const AppContent = () => {
         <>
           <Stack.Screen name='Login' component={Login} />
           <Stack.Screen name='Cadastro' component={Cadastro} />
+          <Stack.Screen name='RecuperarSenha' component={RecuperarSenha} />
+          <Stack.Screen name='ConfirmacaoReset' component={ConfirmacaoReset} />
           <Stack.Screen name='TermosDeUso' component={TermosDeUso} />
           <Stack.Screen name='Rotas' component={Rotas} />
         </>

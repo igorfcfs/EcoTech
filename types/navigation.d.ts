@@ -22,6 +22,8 @@ export type RootStackParamList = {
   EditarPerfil: undefined;
   Login: undefined;
   Cadastro: undefined;
+  RecuperarSenha: undefined;
+  ConfirmacaoReset: { email: string };
   TermosDeUso: undefined;
   Relatório: undefined; // aqui vai abrir o TopTabNavigator
   Home: undefined;

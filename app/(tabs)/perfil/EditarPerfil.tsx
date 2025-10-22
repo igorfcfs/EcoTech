@@ -29,6 +29,7 @@ export default function EditarPerfil({ navigation }: Props) {
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [email, setEmail] = useState('');
   const [nome, setNome] = useState('Usuário');
+  const [sobrenome, setSobrenome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [cpf, setCpf] = useState('');
   const [endereco, setEndereco] = useState('');
@@ -140,6 +141,7 @@ export default function EditarPerfil({ navigation }: Props) {
       if (docSnapshot.exists()) {
         const data = docSnapshot.data();
         setNome(data.nome || 'Usuário');
+        setSobrenome(data.sobrenome || '');
         setEmail(data.email || '');
         setTelefone(data.telefone || '');
         setCpf(data.cpf || '');

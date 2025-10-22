@@ -13,7 +13,7 @@ export default function LinkButton({ text, onPress, textStyle }: LinkButtonProps
 
   return (
     <TouchableOpacity style={styles.linkContainer} onPress={onPress}>
-      <Text style={[styles.linkText, { color: colors.secundario }, textStyle]}>
+      <Text style={[styles.linkText, { color: colors.primario }, textStyle]}>
         {text}
       </Text>
     </TouchableOpacity>

@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import BotaoPrimario from '../components/BotaoPrimario';
 
 export default function TermosDeUso() {
   const navigation = useNavigation();
@@ -126,13 +127,7 @@ export default function TermosDeUso() {
       </ScrollView>
 
       {/* Botão de voltar */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.goBack()}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
+      <BotaoPrimario text="Voltar" onPress={() => navigation.goBack()} style={{alignSelf: 'center'}} />
     </View>
   );
 }

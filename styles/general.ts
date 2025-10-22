@@ -152,7 +152,7 @@ export const getGeneralStyles = (colors: ColorsType): GeneralStyles => ({
     input: {
       width: '100%',
       backgroundColor: colors.inverso,
-      borderWidth: 1,
+      borderWidth: 0,
       borderColor: colors.primario,
       color: colors.branco,
       borderRadius: 100,

@@ -19,7 +19,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -44,6 +48,17 @@ export default function Cadastro({ navigation }: Props) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [aceitou, setAceitou] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showListener = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hideListener = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const carregar = async () => {
@@ -236,177 +251,147 @@ export default function Cadastro({ navigation }: Props) {
     }
   }
 
-  return (
-    <>
+ return (
+  <>
     <SafeAreaView style={general.autenticacao.header}>
-      <SafeAreaView style={{position: 'absolute', left: 10, alignItems: 'flex-start', marginBottom: 20}}>
-        <Titulo text='Crie uma conta' style={{color: colors.neutro, marginBottom: 0}} />
-        <Titulo text='para continuar' style={{color: colors.neutro}} />
+      <SafeAreaView style={{ position: 'absolute', left: 10, alignItems: 'flex-start', marginBottom: 20 }}>
+        <Titulo text="Crie uma conta" style={{ color: colors.neutro, marginBottom: 0 }} />
+        <Titulo text="para continuar" style={{ color: colors.neutro }} />
       </SafeAreaView>
       <Image
-        source={
-          require('../assets/logo.png')
-        }
-        style={{marginLeft: 250, width: 120, height: 100, justifyContent: 'flex-end'}}
+        source={require('../assets/logo.png')}
+        style={{ marginLeft: 250, width: 120, height: 100, justifyContent: 'flex-end' }}
         resizeMode="contain"
       />
     </SafeAreaView>
-    <SafeAreaView style={general.autenticacao.container}>
-      
-      {/* Botões Tabs */}
-      <View style={general.autenticacao.tabContainer}>
-        <TouchableOpacity
-          style={general.autenticacao.tab}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={general.autenticacao.tabText}>
-            Log In
-          </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={general.autenticacao.activeTabCadastro}
-          onPress={() => navigation.navigate('Cadastro')}
-        >
-          <Text style={general.autenticacao.activeTabText}>
-            Cadastrar
-          </Text>
-        </TouchableOpacity>
-      </View>
-      
-      {/* <Titulo text="Cadastro" /> */}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined} 
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} 
+    >
+      <ScrollView
+        contentContainerStyle={[general.autenticacao.container, { flexGrow: 1 }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Botões Tabs */}
+        <View style={general.autenticacao.tabContainer}>
+          <TouchableOpacity
+            style={general.autenticacao.tab}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={general.autenticacao.tabText}>Log In</Text>
+          </TouchableOpacity>
 
-      {/* Campos de Cadastro */}
-      <View style={styles.form}>
-        {/* Nome e Sobrenome */}
-        <View style={styles.row}>
-          <Input
-            placeholder="Nome"
-            value={nome}
-            onChangeText={setNome}
-            style={[styles.inputHalf, { marginRight: 5 }]}
-          />
-          <Input
-            placeholder="Sobrenome"
-            value={sobrenome}
-            onChangeText={setSobrenome}
-            style={[styles.inputHalf, { marginLeft: 5 }]}
-          />
+          <TouchableOpacity
+            style={general.autenticacao.activeTabCadastro}
+            onPress={() => navigation.navigate('Cadastro')}
+          >
+            <Text style={general.autenticacao.activeTabText}>Cadastrar</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Telefone */}
-        <View style={styles.row}>
-          <Image
-            source={require('../assets/brazil-flag.png')}
-            style={styles.flag}
-          />
+        {/* Campos de Cadastro */}
+        <View style={styles.form}>
+          <Titulo text="Nome" style={styles.title} />
+          <Input placeholder="Insira seu nome" value={nome} onChangeText={setNome} />
+
+          <Titulo text="Telefone" style={styles.title} />
           <Input
             placeholder="Telefone Ex: (DDD) 123456789"
             keyboardType="phone-pad"
             value={telefone}
             onChangeText={setTelefone}
-            style={styles.inputWithIcon}
           />
-        </View>
 
-        {/* CPF */}
-        <Input
-          placeholder="Insira seu CPF"
-          keyboardType="numeric"
-          value={cpf}
-          onChangeText={setCpf}
-        />
+          <Titulo text="CPF" style={styles.title} />
+          <Input placeholder="Insira seu CPF" keyboardType="numeric" value={cpf} onChangeText={setCpf} />
 
-        {/* Email */}
-        <Input
-          placeholder="Insira seu email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-
-        {/* Senha com botão olho */}
-        <View style={general.passwordContainer}>
+          <Titulo text="Email" style={styles.title} />
           <Input
-            placeholder="Insira sua senha"
-            secureTextEntry={!mostrarSenha}
-            value={senha}
-            onChangeText={setSenha}
-            style={general.passwordInput}
+            placeholder="Insira seu email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
             autoCapitalize="none"
           />
-          <TouchableOpacity
-            style={general.eyeButton}
-            onPress={() => setMostrarSenha(!mostrarSenha)}
-            activeOpacity={0.7}
-          >
-            <Image
-              source={
-                mostrarSenha
-                  ? require('../assets/icons/visible.png')
-                  : require('../assets/icons/non-visible.png')
-              }
-              style={general.eyeIcon}
-            />
-          </TouchableOpacity>
-        </View>
 
-        {/* Confirmar senha */}
-        <View style={general.passwordContainer}>
-          <Input
-            placeholder="Confirme sua senha"
-            secureTextEntry={!mostrarConfirmarSenha}
-            value={confirmarSenha}
-            onChangeText={setConfirmarSenha}
-            style={general.passwordInput}
-            autoCapitalize="none"
-          />
-          <TouchableOpacity
-            style={general.eyeButton}
-            onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
-            activeOpacity={0.7}
-          >
-            <Image
-              source={
-                mostrarConfirmarSenha
-                  ? require('../assets/icons/visible.png')
-                  : require('../assets/icons/non-visible.png')
-              }
-              style={general.eyeIcon}
+          <Titulo text="Criar senha" style={styles.title} />
+          <View style={general.passwordContainer}>
+            <Input
+              placeholder="Insira sua senha"
+              secureTextEntry={!mostrarSenha}
+              value={senha}
+              onChangeText={setSenha}
+              style={general.passwordInput}
+              autoCapitalize="none"
             />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <Checkbox
-            status={aceitou ? 'checked' : 'unchecked'}
-            onPress={() => toggle(!aceitou)}
-            color="#4CAF50"
-          />
-          <Text style={styles.label}>
-            Aceito os{' '}
-            <Text
-              style={styles.link}
-              onPress={() => navigation.navigate('TermosDeUso')}
+            <TouchableOpacity
+              style={general.eyeButton}
+              onPress={() => setMostrarSenha(!mostrarSenha)}
+              activeOpacity={0.7}
             >
-              Termos de Uso
+              <Image
+                source={mostrarSenha ? require('../assets/icons/visible.png') : require('../assets/icons/non-visible.png')}
+                style={general.eyeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={general.passwordContainer}>
+            <Input
+              placeholder="Confirme sua senha"
+              secureTextEntry={!mostrarConfirmarSenha}
+              value={confirmarSenha}
+              onChangeText={setConfirmarSenha}
+              style={general.passwordInput}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              style={general.eyeButton}
+              onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+              activeOpacity={0.7}
+            >
+              <Image
+                source={mostrarConfirmarSenha ? require('../assets/icons/visible.png') : require('../assets/icons/non-visible.png')}
+                style={general.eyeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.checkboxContainer}>
+            <Checkbox
+              status={aceitou ? 'checked' : 'unchecked'}
+              onPress={() => toggle(!aceitou)}
+              color={colors.secundario}
+            />
+            <Text style={styles.label}>
+              Aceito os{' '}
+              <Text
+                style={{ color: colors.primario, textDecorationLine: 'underline', fontWeight: '500' }}
+                onPress={() => navigation.navigate('TermosDeUso')}
+              >
+                Termos de Uso
+              </Text>
             </Text>
-          </Text>
+          </View>
         </View>
-      </View>
-      
-      {/* Botões */}
-      <View style={{width: '98%', alignItems: 'center'}}>
-        <BotaoPrimario text="CADASTRAR" onPress={signUp} />
-      </View>
-    </SafeAreaView>
-    </>
-  );
+
+        {/* Botão Cadastrar */}
+        <View style={{ width: '98%', alignItems: 'center' }}>
+          <BotaoPrimario text="CADASTRAR" onPress={signUp} />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  </>
+);
+
 }
 
 const styles = StyleSheet.create({
   form: {
-    marginVertical: 0,
+    marginVertical: -30,
     width: '100%'
   },
   row: {
@@ -436,6 +421,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 35,
   },
   label: {
     fontSize: 16,
@@ -463,11 +449,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#000',
     paddingVertical: 30,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#222',
   },
   subtitle: {
     fontSize: 16,
@@ -498,5 +479,8 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: '#000',
   },
+  title: {
+    alignSelf: 'flex-start', fontSize: 16, marginBottom: 3
+  }
 });
 

@@ -30,7 +30,7 @@ export default function Input({
     <TextInput
       placeholder={placeholder}
       style={StyleSheet.flatten([general.textInputs.input, style])}
-      placeholderTextColor={colors.secundario} // pega a cor do tema atual
+      placeholderTextColor={colors.verdeCinza} // pega a cor do tema atual
       keyboardType={keyboardType}
       secureTextEntry={secureTextEntry}
       value={value}

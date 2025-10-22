@@ -1,10 +1,10 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { RootStackParamList, StackScreenProps } from '@/types/navigation';
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import * as Location from 'expo-location';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, DeviceEventEmitter, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Modalize } from 'react-native-modalize';
@@ -119,24 +119,25 @@ export default function Mapa({ navigation }: Props) {
     return () => clearInterval(interval);
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!mapRef.current) return;
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      'GO_TO_LOCAL',
+      ({ latitude, longitude }: { latitude: number; longitude: number }) => {
+        if (!mapRef.current) return;
+        mapRef.current.animateToRegion(
+          {
+            latitude,
+            longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          1000
+        );
+      }
+    );
 
-      const latitude = destinoLatitude ?? userLocation?.latitude ?? -23.5505;
-      const longitude = destinoLongitude ?? userLocation?.longitude ?? -46.6333;
-
-      mapRef.current.animateToRegion(
-        {
-          latitude,
-          longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        },
-        1000
-      );
-    }, [destinoLatitude, destinoLongitude, userLocation])
-  );
+    return () => subscription.remove();
+  }, []);
 
   const handleMarkerPress = (local: Local) => {
     setSelectedLocais(local);

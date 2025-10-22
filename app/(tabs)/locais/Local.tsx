@@ -6,7 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import axios from 'axios';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { API_URL } from '../../../api';
 import { auth } from '../../../firebaseConfig';
 
@@ -236,20 +236,18 @@ export default function Local({ navigation, route }: Props) {
         {!loadingDistancia && <Text style={styles.address}>{distanciaFormatada}</Text>}
 
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            navigation.setParams({
-              destinoLatitude: local.coordenadas._latitude,
-              destinoLongitude: local.coordenadas._longitude,
-              localId: local.id,
-            });
-            navigation.goBack();
-
-          }}
-        >
-          <Ionicons name="map" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Abrir no mapa</Text>
-        </TouchableOpacity>
+  style={styles.button}
+  onPress={() => {
+    DeviceEventEmitter.emit('GO_TO_LOCAL', {
+      latitude: local.coordenadas._latitude,
+      longitude: local.coordenadas._longitude,
+    });
+    navigation.goBack(); // volta para o mapa
+  }}
+>
+  <Ionicons name="map" size={20} color="#fff" />
+  <Text style={styles.buttonText}>Abrir no mapa</Text>
+</TouchableOpacity>
       </View>
 
       {/* Card 2 - Reciclagem */}

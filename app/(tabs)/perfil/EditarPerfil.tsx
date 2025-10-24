@@ -1,3 +1,5 @@
+import { ModalError, ModalSuccess } from '@/components/CustomModal'; // 🔹 Importa modais
+import ModalTrocarFoto from '@/components/ModalTrocarFoto'; // ajuste o caminho conforme sua estrutura
 import Titulo from '@/components/Titulo';
 import { useTheme } from '@/contexts/ThemeContext';
 import { StackScreenProps } from '@/types/navigation';
@@ -7,7 +9,6 @@ import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   Image,
   ImageBackground,
   SafeAreaView,
@@ -20,7 +21,7 @@ import {
 import { API_URL } from '../../../api';
 import BotaoPrimario from '../../../components/BotaoPrimario';
 import Input from '../../../components/Input';
-import { auth, db, firebaseConfig } from '../../../firebaseConfig';
+import { auth, db } from '../../../firebaseConfig';
 
 type Props = StackScreenProps<'EditarPerfil'>;
 
@@ -36,7 +37,22 @@ export default function EditarPerfil({ navigation }: Props) {
   const [massa, setMassa] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
 
+  // 🔹 Controle dos modais
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<'success' | 'error'>('error');
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTrocarFotoVisible, setModalTrocarFotoVisible] = useState(false);
+
+  const showModal = (type: 'success' | 'error', title: string, message: string) => {
+    setModalType(type);
+    setModalTitle(title);
+    setModalMessage(message);
+    setModalVisible(true);
+  };
+
   const { colors } = useTheme();
+
   const styles = StyleSheet.create({
     banner: {
       width: '100%',
@@ -45,98 +61,41 @@ export default function EditarPerfil({ navigation }: Props) {
       alignItems: 'center',
     },
     container: { flex: 1, backgroundColor: colors.background },
-    scroll: { padding: 0},
-    header: { alignItems: 'center', marginBottom: 20 },
+    scroll: { padding: 0 },
     avatar: { width: 120, height: 120, borderRadius: 60, marginBottom: 10 },
-    campo: { fontSize: 20, marginBottom: 15, color: colors.titulo, padding: 10, backgroundColor: colors.backCard, borderRadius: 10, borderColor: "#414c41" },
     editButton: {
-      paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, borderWidth: 1,
-      backgroundColor: colors.backCard
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 20,
+      borderWidth: 1,
+      backgroundColor: colors.backCard,
     },
     editText: { fontWeight: 'bold', color: colors.secundario },
-
-    section: { marginBottom: 25, borderRadius: 100, padding: 10 },
-    sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: colors.branco },
-
+    campo: {
+      fontSize: 20,
+      marginBottom: 15,
+      color: colors.titulo,
+      padding: 10,
+      backgroundColor: colors.backCard,
+      borderRadius: 10,
+      borderColor: '#414c41',
+    },
   });
 
-  // Busca dados do usuário logado
+  // Busca ID do usuário autenticado
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUserId(user.uid);
-      } else {
-        console.warn("Usuário não está logado");
-      }
+      if (user) setUserId(user.uid);
     });
-
     return () => unsubscribe();
   }, []);
 
-  // Atualiza pontos e eletrônicos a cada 60s
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const USER_URL = `${API_URL}/relatorio/${user.uid}`;
-        const response = await axios.get(USER_URL);
-        const analytics = response.data;
-
-        setMassa(analytics.massa);
-      } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
-      }
-    };
-
-    fetchAnalytics();
-    const interval = setInterval(fetchAnalytics, 10000); // Atualiza a cada 10s
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const uploadImageAndSaveUrl = async (uri: string) => {
-    try {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const response_img = await fetch(uri); // baixa a imagem
-      const blob = await response_img.blob(); // converte para blob
-
-      const storage = getStorage();
-      const filename = `gs://${firebaseConfig.projectId}.firebasestorage.app/profile/${user.uid}/photo.jpg`;
-      const imageRef = ref(storage, filename);
-
-      await uploadBytes(imageRef, blob); // faz upload do blob pro Firebase
-      const downloadURL = await getDownloadURL(imageRef); // pega a URL pública
-
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, { fotoPerfil: downloadURL });
-
-      Alert.alert('Sucesso', 'Foto de perfil atualizada com sucesso!');
-    } catch (error) {
-      console.error('🔥 Erro ao fazer upload da imagem:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar a foto de perfil.');
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-      setHasGalleryPermission(
-        galleryStatus.status === 'granted' && cameraStatus.status === 'granted'
-      );
-    })();
-  }, []);
-
+  // Busca dados do usuário e atualiza em tempo real
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) return;
 
     const userRef = doc(db, 'users', user.uid);
-
     const unsubscribe = onSnapshot(userRef, (docSnapshot) => {
       if (docSnapshot.exists()) {
         const data = docSnapshot.data();
@@ -149,13 +108,68 @@ export default function EditarPerfil({ navigation }: Props) {
         setImageUri(data.fotoPerfil || null);
       }
     });
-
     return () => unsubscribe();
   }, []);
 
+  // Atualiza massa reciclada a cada 10s
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const USER_URL = `${API_URL}/relatorio/${user.uid}`;
+        const response = await axios.get(USER_URL);
+        const analytics = response.data;
+        setMassa(analytics.massa);
+      } catch (error) {
+        console.error('Erro ao buscar dados do usuário:', error);
+      }
+    };
+    fetchAnalytics();
+    const interval = setInterval(fetchAnalytics, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Permissões
+  useEffect(() => {
+    (async () => {
+      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+      setHasGalleryPermission(
+        galleryStatus.status === 'granted' && cameraStatus.status === 'granted'
+      );
+    })();
+  }, []);
+
+  // Upload da imagem de perfil
+  const uploadImageAndSaveUrl = async (uri: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const response_img = await fetch(uri);
+      const blob = await response_img.blob();
+
+      const storage = getStorage();
+      const filename = `profile/${user.uid}/photo.jpg`;
+      const imageRef = ref(storage, filename);
+
+      await uploadBytes(imageRef, blob);
+      const downloadURL = await getDownloadURL(imageRef);
+
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, { fotoPerfil: downloadURL });
+
+      showModal('success', 'Sucesso', 'Foto de perfil atualizada com sucesso!');
+    } catch (error) {
+      console.error('🔥 Erro ao fazer upload da imagem:', error);
+      showModal('error', 'Erro', 'Não foi possível atualizar a foto de perfil.');
+    }
+  };
+
   const pickImageFromGallery = async () => {
     if (!hasGalleryPermission) {
-      Alert.alert('Permissão necessária', 'Você precisa conceder permissão para acessar a galeria.');
+      showModal('error', 'Permissão necessária', 'Você precisa conceder permissão para acessar a galeria.');
       return;
     }
 
@@ -169,18 +183,15 @@ export default function EditarPerfil({ navigation }: Props) {
     if (!result.canceled && result.assets?.length > 0) {
       const asset = result.assets[0];
       if (asset.uri) {
-        console.log(asset.uri);
         setImageUri(asset.uri);
         await uploadImageAndSaveUrl(asset.uri);
-      } else {
-        console.warn('Imagem não possui URI válida:', asset);
       }
     }
   };
 
   const takePhoto = async () => {
     if (!hasGalleryPermission) {
-      Alert.alert('Permissão necessária', 'Você precisa conceder permissão para usar a câmera.');
+      showModal('error', 'Permissão necessária', 'Você precisa conceder permissão para usar a câmera.');
       return;
     }
 
@@ -195,18 +206,12 @@ export default function EditarPerfil({ navigation }: Props) {
       if (asset.uri) {
         setImageUri(asset.uri);
         await uploadImageAndSaveUrl(asset.uri);
-      } else {
-        console.warn('Imagem não possui URI válida:', asset);
       }
     }
   };
 
   const changePhoto = () => {
-    Alert.alert('Trocar foto', 'Escolha uma opção', [
-      { text: 'Selecionar da galeria', onPress: pickImageFromGallery },
-      { text: 'Tirar uma foto', onPress: takePhoto },
-      { text: 'Cancelar', style: 'cancel' },
-    ]);
+    setModalTrocarFotoVisible(true);
   };
 
   const handleSalvarAlteracoes = async () => {
@@ -215,47 +220,103 @@ export default function EditarPerfil({ navigation }: Props) {
         await axios.put(`${API_URL}/users/${userId}`, {
           nome,
           email,
-          telefone
+          telefone,
         });
-      Alert.alert('Sucesso', 'Alterações salvas com sucesso!');
-        navigation.goBack();
+        showModal('success', 'Sucesso', 'Alterações salvas com sucesso!');
       } catch (error) {
         console.error('Erro ao salvar alterações:', error);
-        Alert.alert('Erro', 'Não foi possível salvar as alterações.');
+        showModal('error', 'Erro', 'Não foi possível salvar as alterações.');
       }
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+    <>
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <ImageBackground source={require('../../../assets/bannerHome.png')} style={styles.banner}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.avatar} />
+            ) : (
+              <Image source={require('../../../assets/default-avatar.png')} style={styles.avatar} />
+            )}
+            <TouchableOpacity style={styles.editButton} onPress={changePhoto}>
+              <Text style={styles.editText}>EDITAR FOTO</Text>
+            </TouchableOpacity>
+          </ImageBackground>
 
-        {/* Header - Foto + Nome + Editar */}
-        <ImageBackground source={require('../../../assets/bannerHome.png')} style={styles.banner}>
-          {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.avatar} />
-          ) : (
-            <Image source={require('../../../assets/default-avatar.png')} style={styles.avatar} />
-          )}
-          <TouchableOpacity style={styles.editButton} onPress={changePhoto}>
-            <Text style={styles.editText}>EDITAR FOTO</Text>
-          </TouchableOpacity>
-        </ImageBackground>
-        
-        <View style={{marginVertical: 20, marginHorizontal: 15, gap: 0, justifyContent: 'center', alignItems: 'center'}}>
-          <Titulo text='Nome' style={{alignSelf: 'flex-start'}} />
-          <Input placeholder="Digite seu novo nome" value={nome} style={styles.campo} onChangeText={(newName) => setNome(newName)} />
-          
-          <Titulo text='Email' style={{alignSelf: 'flex-start'}} />
-          <Input placeholder="Digite seu novo email" value={email} style={styles.campo} onChangeText={(newEmail) => setEmail(newEmail)} />
-          
-          <Titulo text='Telefone' style={{alignSelf: 'flex-start'}} />
-          <Input placeholder="Digite seu novo telefone" value={telefone} style={styles.campo} onChangeText={(newPhone) => setTelefone(newPhone)} />
-          
-          <BotaoPrimario text={"SALVAR ALTERAÇÕES"} style={{alignSelf: 'center'}} onPress={handleSalvarAlteracoes} style={{marginTop: 20}} />
-        </View>
+          <View
+            style={{
+              marginVertical: 20,
+              marginHorizontal: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Titulo text="Nome" style={{ alignSelf: 'flex-start' }} />
+            <Input
+              placeholder="Digite seu novo nome"
+              value={nome}
+              style={styles.campo}
+              onChangeText={setNome}
+            />
 
-      </ScrollView>
-    </SafeAreaView>
+            <Titulo text="Email" style={{ alignSelf: 'flex-start' }} />
+            <Input
+              placeholder="Digite seu novo email"
+              value={email}
+              style={styles.campo}
+              onChangeText={setEmail}
+            />
+
+            <Titulo text="Telefone" style={{ alignSelf: 'flex-start' }} />
+            <Input
+              placeholder="Digite seu novo telefone"
+              value={telefone}
+              style={styles.campo}
+              onChangeText={setTelefone}
+            />
+
+            <BotaoPrimario
+              text="SALVAR ALTERAÇÕES"
+              onPress={handleSalvarAlteracoes}
+              style={{ marginTop: 20 }}
+            />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+
+      {/* 🔹 Modal dinâmico */}
+      {modalType === 'error' ? (
+        <ModalError
+          visible={modalVisible}
+          title={modalTitle}
+          message={modalMessage}
+          onClose={() => setModalVisible(false)}
+        />
+      ) : (
+        <ModalSuccess
+          visible={modalVisible}
+          title={modalTitle}
+          message={modalMessage}
+          onClose={() => {
+            setModalVisible(false);
+            navigation.goBack();
+          }}
+        />
+      )}
+      <ModalTrocarFoto
+        visible={modalTrocarFotoVisible}
+        onClose={() => setModalTrocarFotoVisible(false)}
+        onPickGallery={async () => {
+          setModalTrocarFotoVisible(false);
+          await pickImageFromGallery();
+        }}
+        onTakePhoto={async () => {
+          setModalTrocarFotoVisible(false);
+          await takePhoto();
+        }}
+      />
+    </>
   );
 }

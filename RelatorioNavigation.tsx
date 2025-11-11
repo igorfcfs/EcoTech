@@ -29,8 +29,8 @@ export default function RelatorioNavigation() {
           },
         }}
       >
-        <Tab.Screen name="Estatísticas" component={RelatorioGeralScreen} />
-        <Tab.Screen name="Histórico" component={RelatorioEletronicosScreen} />
+        <Tab.Screen name="Estatisticas" component={RelatorioGeralScreen} options={{tabBarLabel: 'Estatísticas'}} />
+        <Tab.Screen name="Historico" component={RelatorioEletronicosScreen} options={{tabBarLabel: 'Histórico'}} />
       </Tab.Navigator>
     </SafeAreaView>
   );

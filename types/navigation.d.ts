@@ -25,7 +25,7 @@ export type RootStackParamList = {
   RecuperarSenha: undefined;
   ConfirmacaoReset: { email: string };
   TermosDeUso: undefined;
-  Relatório: undefined; // aqui vai abrir o TopTabNavigator
+  Relatorio: undefined; // aqui vai abrir o TopTabNavigator
   Home: undefined;
   Mapa: { destinoLatitude: number; destinoLongitude: number; localId: string };
   Local: { localId: string };
@@ -35,8 +35,8 @@ export type RootStackParamList = {
  * ✅ BOTTOM TABS (se você tiver um TabNavigator embaixo)
  */
 export type BottomTabParamList = {
-  Início: undefined;
-  Relatório: undefined;
+  Inicio: undefined;
+  Relatorio: undefined;
   Perfil: undefined;
   Mapa: { destinoLatitude: number; destinoLongitude: number; localId: string };
 };
@@ -45,8 +45,8 @@ export type BottomTabParamList = {
  * ✅ TOP TABS dentro de "Relatório"
  */
 export type RelatorioTabParamList = {
-  Estatísticas: undefined;
-  Histórico: undefined;
+  Estatisticas: undefined;
+  Historico: undefined;
 };
 
 /**

@@ -28,12 +28,13 @@ export type RootStackParamList = {
   RecuperarSenha: undefined;
   ConfirmacaoReset: { email: string };
   TermosDeUso: undefined;
-  Relatório: undefined; // TopTabNavigator
+  Relatorio: undefined; // TopTabNavigator
   Home: undefined;
-  Configurações: undefined;
-  Histórico: undefined;
+  Configuracoes: undefined;
+  Historico: undefined;
   Local: { localId: string };
   Mapa: { destinoLatitude: number; destinoLongitude: number, localId: string };
+  Onboarding: undefined;
 };
 
 /**
@@ -42,20 +43,20 @@ export type RootStackParamList = {
  * ===============================
  */
 export type BottomTabParamList = {
-  Início: undefined;
-  Relatório: undefined;
+  Inicio: undefined;
+  Relatorio: undefined;
   Perfil: undefined;
   Mapa: { destinoLatitude: number; destinoLongitude: number; localId: string };
 };
 
 /**
  * ===============================
- * TOP TABS dentro de "Relatório"
+ * TOP TABS dentro de "Relatorio"
  * ===============================
  */
 export type RelatorioTabParamList = {
-  Estatísticas: undefined;
-  Histórico: undefined;
+  Estatisticas: undefined;
+  Historico: undefined;
 };
 
 /**

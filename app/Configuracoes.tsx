@@ -8,7 +8,7 @@ import { API_URL } from '../api';
 import { ModalError, ModalInfo, ModalSuccess } from '../components/CustomModal';
 import { auth } from '../firebaseConfig';
 
-type Props = StackScreenProps<'Configurações'>;
+type Props = StackScreenProps<'Configuracoes'>;
 
 export default function Configuracoes({ navigation }: Props) {
   const { colors, theme, toggleTheme } = useTheme();
@@ -51,6 +51,8 @@ export default function Configuracoes({ navigation }: Props) {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
+
+      // deletar a imagem do usuário no storage, se houver
 
       if (!response.ok) throw new Error('Erro ao deletar conta no servidor.');
 

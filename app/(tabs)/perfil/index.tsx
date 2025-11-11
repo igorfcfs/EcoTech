@@ -27,7 +27,7 @@ export default function Perfil({ navigation }: Props) {
   const [imageUri, setImageUri] = useState(null);
   const [nome, setNome] = useState('Usuário');
   const [userId, setUserId] = useState('');
-  const [massa, setMassa] = useState(0);
+  const [massa, setMassa] = useState<number | null>(null);
 
   const { colors } = useTheme();
 
@@ -143,7 +143,7 @@ export default function Perfil({ navigation }: Props) {
               <Image source={require('../../../assets/default-avatar.png')} style={styles.avatar} />
             )}
             {/* <BotaoPrimario text="Settings" onPress={() => navigation.navigate('Configurações')} /> */}
-            <Ionicons name="settings-outline" size={40} color={'#fff'} onPress={() => navigation.navigate('Configurações')} style={{marginLeft: 70, marginBottom: 80}} />
+            <Ionicons name="settings-outline" size={40} color={'#fff'} onPress={() => navigation.navigate('Configuracoes')} style={{marginLeft: 70, marginBottom: 80}} />
           </View>
           <Text style={styles.nome}>{nome.split(' ')[0]}</Text>
           <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditarPerfil')}>
@@ -171,7 +171,7 @@ export default function Perfil({ navigation }: Props) {
         {/* Outros */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Outros</Text>
-          <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Relatório')}>
+          <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Relatorio')}>
             <Text style={styles.listItemText}>Histórico de reciclagem</Text>
           </TouchableOpacity>
           {/* <TouchableOpacity style={styles.listItem}>

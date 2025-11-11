@@ -1,53 +1,97 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import { auth } from "../firebaseConfig";
 
 // Screens
 import Rotas from '../Rotas';
+import Local from './(tabs)/locais/Local';
 import EditarPerfil from './(tabs)/perfil/EditarPerfil';
 import ReciclarScreen from "./(tabs)/Reciclar";
 import Cadastro from './Cadastro';
 import Configuracoes from './Configuracoes';
 import ConfirmacaoReset from './ConfirmacaoReset';
 import Login from './Login';
+import Onboarding from './Onboarding';
 import RecuperarSenha from './RecuperarSenha';
 import TermosDeUso from './TermosDeUso';
 
 // Contexto de Tema
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
-import Local from './(tabs)/locais/Local';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
 const AppContent = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
-  const { colors } = useTheme(); // pega as cores atuais do tema
+  const [loading, setLoading] = useState(true); // novo estado
+  const { colors, theme } = useTheme();
+
+  if (!theme) {
+    return null; // evita render prematuro
+  }
+
+  const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
 
   useEffect(() => {
-    try {
-      onAuthStateChanged(auth, _user => setUser(_user));
-      if (auth) {
-        console.log("✅ Firebase Auth conectado com sucesso!");
-        setIsConnected(true);
-      } else {
-        console.log("❌ Firebase Auth não conectado!");
-        setIsConnected(false);
-      }
-    } catch (error) {
-      console.error("❌ Erro ao conectar ao Firebase Auth:", error);
+    const unsubscribe = onAuthStateChanged(auth, (_user) => {
+      setUser(_user);
+      setLoading(false); // só libera após a verificação
+    });
+
+    if (auth) {
+      console.log("✅ Firebase Auth conectado com sucesso!");
+      setIsConnected(true);
+    } else {
+      console.log("❌ Firebase Auth não conectado!");
       setIsConnected(false);
     }
+
+    return unsubscribe;
   }, []);
 
-  if (isConnected === null) {
+  useEffect(() => {
+    const checkFirstTime = async () => {
+      const hasOpened = await AsyncStorage.getItem('@hasOpenedApp');
+      setIsFirstTime(!hasOpened);
+      if (!hasOpened) {
+        await AsyncStorage.setItem('@hasOpenedApp', 'true');
+      }
+    };
+    checkFirstTime();
+  }, []);
+
+  if (isFirstTime === null) return null; // loading splash
+
+  // Exibe tela de carregamento inicial
+  if (loading || isConnected === null) {
+    const logoSource =
+      theme === 'dark'
+        ? require('@/assets/logo.png')        // LOGO para tema escuro
+        : require('@/assets/logo-dark.png');  // LOGO para tema claro
+
     return (
-      <View style={styles.centered}>
-        <Text style={[styles.text, { color: colors.titulo }]}>
-          🔄 Verificando conexão com Firebase...
-        </Text>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.background,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Image
+          source={logoSource}
+          style={{
+            width: 140,
+            height: 140,
+            marginBottom: 25,
+          }}
+          resizeMode="contain"
+        />
+
+        <ActivityIndicator size="large" color={colors.secundario} />
       </View>
     );
   }
@@ -64,7 +108,17 @@ const AppContent = () => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {user ? (
+      {isFirstTime ? (
+        <>
+          <Stack.Screen name='Onboarding' component={Onboarding} />
+          <Stack.Screen name='Login' component={Login} />
+          <Stack.Screen name='Cadastro' component={Cadastro} />
+          <Stack.Screen name='RecuperarSenha' component={RecuperarSenha} />
+          <Stack.Screen name='ConfirmacaoReset' component={ConfirmacaoReset} />
+          <Stack.Screen name='TermosDeUso' component={TermosDeUso} />
+        </>
+      ) 
+      : user ? (
         <>
           <Stack.Screen name='Rotas' component={Rotas} />
           <Stack.Screen 
@@ -90,7 +144,7 @@ const AppContent = () => {
             }}
           />
           <Stack.Screen 
-            name='Configurações' 
+            name='Configuracoes' 
             component={Configuracoes} 
             options={{
               headerShown: true,
@@ -119,7 +173,6 @@ const AppContent = () => {
           <Stack.Screen name='RecuperarSenha' component={RecuperarSenha} />
           <Stack.Screen name='ConfirmacaoReset' component={ConfirmacaoReset} />
           <Stack.Screen name='TermosDeUso' component={TermosDeUso} />
-          <Stack.Screen name='Rotas' component={Rotas} />
         </>
       )}
     </Stack.Navigator>
@@ -135,7 +188,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  text: { fontSize: 18 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  text: { fontSize: 16, textAlign: 'center' },
   errorText: { fontSize: 18, color: 'red' },
 });

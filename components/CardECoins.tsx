@@ -1,17 +1,18 @@
 import { useTheme } from '@/contexts/ThemeContext';
-import { RootStackParamList } from '@/types/navigation';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Image, Pressable, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import { metrics } from '../styles';
 
 interface CardECoinsProps {
   descricao: string;
-  quantidade: number;
+  quantidade: number | null;
+  loading: boolean;
 }
 
-export default function CardECoins({ descricao, quantidade }: CardECoinsProps) {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { colors } = useTheme(); // ✅ cores do tema atual
+export default function CardECoins({ descricao, quantidade, loading }: CardECoinsProps) {
+  const navigation = useNavigation();
+  const { colors } = useTheme();
 
   return (
     <Pressable
@@ -20,7 +21,14 @@ export default function CardECoins({ descricao, quantidade }: CardECoinsProps) {
     >
       <Text style={[styles.cardTitle, { color: colors.titulo }]}>{descricao}</Text>
       <Image source={require('../assets/ECoin.png')} style={styles.coinImage} />
-      <Text style={[styles.cardValue, { color: colors.titulo }]}>{quantidade}</Text>
+
+      {loading ? (
+        <ActivityIndicator size="small" color={colors.secundario} />
+      ) : (
+        <Text style={[styles.cardValue, { color: colors.titulo }]}>
+          {quantidade!.toFixed(2)}
+        </Text>
+      )}
     </Pressable>
   );
 }

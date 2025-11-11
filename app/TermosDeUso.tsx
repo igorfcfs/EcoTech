@@ -1,3 +1,4 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import React from 'react';
@@ -6,6 +7,72 @@ import BotaoPrimario from '../components/BotaoPrimario';
 
 export default function TermosDeUso() {
   const navigation = useNavigation();
+  const { colors } = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: 20,
+      paddingTop: 50,
+    },
+    header: {
+      fontSize: 22,
+      fontWeight: '700',
+      textAlign: 'center',
+      marginBottom: 6,
+      color: colors.titulo,
+    },
+    data: {
+      textAlign: 'center',
+      color: colors.titulo,
+      fontSize: 14,
+      marginBottom: 15,
+    },
+    scroll: {
+      flex: 1,
+      marginBottom: 25,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      marginTop: 18,
+      marginBottom: 5,
+      color: colors.titulo,
+    },
+    text: {
+      fontSize: 16,
+      color: colors.titulo,
+      lineHeight: 24,
+      marginBottom: 8,
+    },
+    bold: {
+      fontWeight: '600',
+    },
+    link: {
+      color: '#007BFF',
+      textDecorationLine: 'underline',
+    },
+    footer: {
+      textAlign: 'center',
+      fontSize: 14,
+      color: colors.texto,
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    button: {
+      backgroundColor: '#4CAF50',
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginBottom: 15,
+    },
+    buttonText: {
+      color: colors.titulo,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
 
   const abrirPoliticaPrivacidade = () => {
     Linking.openURL(
@@ -132,66 +199,3 @@ export default function TermosDeUso() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF',
-    paddingHorizontal: 20,
-    paddingTop: 50,
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 6,
-  },
-  data: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 14,
-    marginBottom: 15,
-  },
-  scroll: {
-    flex: 1,
-    marginBottom: 25,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 18,
-    marginBottom: 5,
-    color: '#222',
-  },
-  text: {
-    fontSize: 16,
-    color: '#444',
-    lineHeight: 24,
-    marginBottom: 8,
-  },
-  bold: {
-    fontWeight: '600',
-  },
-  link: {
-    color: '#007BFF',
-    textDecorationLine: 'underline',
-  },
-  footer: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: '#777',
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  buttonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

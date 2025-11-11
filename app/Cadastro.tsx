@@ -18,11 +18,11 @@ import {
 } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,6 +32,7 @@ import {
 import { Checkbox } from 'react-native-paper';
 import { API_URL } from '../api';
 import BotaoPrimario from '../components/BotaoPrimario';
+import BotaoSecundario from '../components/BotaoSecundario';
 import Input from '../components/Input';
 import { auth, db } from '../firebaseConfig';
 
@@ -39,7 +40,6 @@ type Props = StackScreenProps<'Cadastro'>;
 
 export default function Cadastro({ navigation }: Props) {
   const [nome, setNome] = useState('');
-  const [sobrenome, setSobrenome] = useState('');
   const [cpf, setCpf] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
@@ -55,6 +55,18 @@ export default function Cadastro({ navigation }: Props) {
   const [modalType, setModalType] = useState<'success' | 'error'>('error');
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
+
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const showModal = (
     type: 'success' | 'error',
@@ -179,6 +191,19 @@ export default function Cadastro({ navigation }: Props) {
       return;
     }
 
+    const usersRef = collection(db, 'users');
+    const cpfQuery = query(usersRef, where('cpf', '==', cpf));
+    const cpfSnapshot = await getDocs(cpfQuery);
+
+    if (!cpfSnapshot.empty) {
+      // pega o primeiro doc encontrado
+      const userData = cpfSnapshot.docs[0].data();
+      
+      if (userData.nome !== null && userData.nome !== '') {
+        showModal('error', 'Erro', 'CPF já está em uso!');
+        return;
+      }
+    }
     try {
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('cpf', '==', cpf));
@@ -217,7 +242,7 @@ export default function Cadastro({ navigation }: Props) {
         responseUsers = await axios.post(`${API_URL}/users`, userData);
       }
 
-      if (responseUsers.status !== 200 && responseUsers.status !== 201) {
+      if (responseUsers?.status !== 200 && responseUsers?.status !== 201) {
         throw new Error('Erro ao salvar usuário no banco de dados');
       }
 
@@ -244,138 +269,161 @@ export default function Cadastro({ navigation }: Props) {
   }
 
   return (
-    <>
-      <SafeAreaView style={general.autenticacao.header}>
-        <SafeAreaView style={{ position: 'absolute', left: 10, alignItems: 'flex-start', marginBottom: 20 }}>
-          <Titulo text="Crie uma conta" style={{ color: colors.neutro, marginBottom: 0 }} />
-          <Titulo text="para continuar" style={{ color: colors.neutro }} />
-        </SafeAreaView>
-        <Image
-          source={require('../assets/logo.png')}
-          style={{ marginLeft: 250, width: 120, height: 100, justifyContent: 'flex-end' }}
-          resizeMode="contain"
-        />
-      </SafeAreaView>
-
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        scrollEnabled={keyboardOpen} // ✅ Só rola quando o teclado está aberto
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          contentContainerStyle={[general.autenticacao.container, { flexGrow: 1 }]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Tabs */}
-          <View style={general.autenticacao.tabContainer}>
-            <TouchableOpacity
-              style={general.autenticacao.tab}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={general.autenticacao.tabText}>Log In</Text>
-            </TouchableOpacity>
+        {/* 🔹 Banner */}
+        <Image
+          source={require('../assets/bannerAuth.png')}
+          style={{
+            width: '100%',
+            marginBottom: 10,
+            resizeMode: 'cover',
+          }}
+        />
 
-            <TouchableOpacity
-              style={general.autenticacao.activeTabCadastro}
-              onPress={() => navigation.navigate('Cadastro')}
-            >
-              <Text style={general.autenticacao.activeTabText}>Cadastrar</Text>
-            </TouchableOpacity>
-          </View>
+        {/* 🔹 Conteúdo principal */}
+        <View  style={{
+          flex: 1,
+          backgroundColor: colors.background,
+          transform: [{ translateY: -50 }],
+          marginBottom: -50,
+          width: Dimensions.get('window').width, // ✅ pega a largura exata da tela
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          padding: 25,
+          marginTop: -25, // 🔹 sobe um pouco pra sobrepor a imagem
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.15,
+          shadowRadius: 6,
+          elevation: 8, // 🔹 sombra no Android
+        }}>
+          <Titulo text="Nome" style={styles.title} />
+          <Input
+            placeholder="Insira seu nome completo"
+            value={nome}
+            onChangeText={setNome}
+          />
 
-          {/* Campos */}
-          <View style={styles.form}>
-            <Titulo text="Nome" style={styles.title} />
-            <Input placeholder="Insira seu nome" value={nome} onChangeText={setNome} />
+          <Titulo text="Telefone" style={styles.title} />
+          <Input
+            placeholder="(DDD) 99999-9999"
+            keyboardType="phone-pad"
+            value={telefone}
+            onChangeText={setTelefone}
+          />
 
-            <Titulo text="Telefone" style={styles.title} />
+          <Titulo text="CPF" style={styles.title} />
+          <Input
+            placeholder="Insira seu CPF"
+            keyboardType="numeric"
+            value={cpf}
+            onChangeText={setCpf}
+          />
+
+          <Titulo text="E-mail" style={styles.title} />
+          <Input
+            placeholder="Insira seu e-mail"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <Titulo text="Senha" style={styles.title} />
+          <View style={general.passwordContainer}>
             <Input
-              placeholder="Telefone Ex: (DDD) 123456789"
-              keyboardType="phone-pad"
-              value={telefone}
-              onChangeText={setTelefone}
-            />
-
-            <Titulo text="CPF" style={styles.title} />
-            <Input placeholder="Insira seu CPF" keyboardType="numeric" value={cpf} onChangeText={setCpf} />
-
-            <Titulo text="Email" style={styles.title} />
-            <Input
-              placeholder="Insira seu email"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
+              placeholder="Crie sua senha"
+              secureTextEntry={!mostrarSenha}
+              value={senha}
+              onChangeText={setSenha}
+              style={general.passwordInput}
               autoCapitalize="none"
             />
-
-            <Titulo text="Criar senha" style={styles.title} />
-            <View style={general.passwordContainer}>
-              <Input
-                placeholder="Insira sua senha"
-                secureTextEntry={!mostrarSenha}
-                value={senha}
-                onChangeText={setSenha}
-                style={general.passwordInput}
-                autoCapitalize="none"
+            <TouchableOpacity
+              style={general.eyeButton}
+              onPress={() => setMostrarSenha(!mostrarSenha)}
+              activeOpacity={0.7}
+            >
+              <Image
+                source={
+                  mostrarSenha
+                    ? require('../assets/icons/visible.png')
+                    : require('../assets/icons/non-visible.png')
+                }
+                style={general.eyeIcon}
               />
-              <TouchableOpacity
-                style={general.eyeButton}
-                onPress={() => setMostrarSenha(!mostrarSenha)}
-                activeOpacity={0.7}
-              >
-                <Image
-                  source={mostrarSenha ? require('../assets/icons/visible.png') : require('../assets/icons/non-visible.png')}
-                  style={general.eyeIcon}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={general.passwordContainer}>
-              <Input
-                placeholder="Confirme sua senha"
-                secureTextEntry={!mostrarConfirmarSenha}
-                value={confirmarSenha}
-                onChangeText={setConfirmarSenha}
-                style={general.passwordInput}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                style={general.eyeButton}
-                onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
-                activeOpacity={0.7}
-              >
-                <Image
-                  source={mostrarConfirmarSenha ? require('../assets/icons/visible.png') : require('../assets/icons/non-visible.png')}
-                  style={general.eyeIcon}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.checkboxContainer}>
-              <Checkbox
-                status={aceitou ? 'checked' : 'unchecked'}
-                onPress={() => toggle(!aceitou)}
-                color={colors.secundario}
-              />
-              <Text style={styles.label}>
-                Aceito os{' '}
-                <Text
-                  style={{ color: colors.primario, textDecorationLine: 'underline', fontWeight: '500' }}
-                  onPress={() => navigation.navigate('TermosDeUso')}
-                >
-                  Termos de Uso
-                </Text>
-              </Text>
-            </View>
+            </TouchableOpacity>
           </View>
 
-          {/* Botão Cadastrar */}
+          <Titulo text="Confirmar senha" style={styles.title} />
+          <View style={general.passwordContainer}>
+            <Input
+              placeholder="Confirme sua senha"
+              secureTextEntry={!mostrarConfirmarSenha}
+              value={confirmarSenha}
+              onChangeText={setConfirmarSenha}
+              style={general.passwordInput}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              style={general.eyeButton}
+              onPress={() =>
+                setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+              }
+              activeOpacity={0.7}
+            >
+              <Image
+                source={
+                  mostrarConfirmarSenha
+                    ? require('../assets/icons/visible.png')
+                    : require('../assets/icons/non-visible.png')
+                }
+                style={general.eyeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* 🔹 Checkbox */}
+          <View style={styles.checkboxContainer}>
+            <Checkbox
+              status={aceitou ? 'checked' : 'unchecked'}
+              onPress={() => toggle(!aceitou)}
+              color={colors.secundario}
+            />
+            <Text style={{color: colors.titulo, ...styles.label}}>
+              Li e concordo com os{' '}
+              <Text
+                style={{
+                  color: colors.secundario,
+                  textDecorationLine: 'underline',
+                  fontWeight: '500',
+                }}
+                onPress={() => navigation.navigate('TermosDeUso')}
+              >
+                termos de uso
+              </Text>
+            </Text>
+          </View>
+
+          {/* 🔹 Botão principal */}
           <View style={{ width: '98%', alignItems: 'center' }}>
             <BotaoPrimario text="CADASTRAR" onPress={signUp} />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          {/* 🔹 Botão secundario */}
+          <View style={{ width: '98%', alignItems: 'center' }}>
+            <BotaoSecundario text="Já tenho uma conta" onPress={() => navigation.goBack()} />
+          </View>
+        </View>
+      </ScrollView>
 
       {/* 🔹 Modal dinâmico */}
       {modalType === 'error' ? (
@@ -396,7 +444,7 @@ export default function Cadastro({ navigation }: Props) {
           }}
         />
       )}
-    </>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -412,6 +460,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
+    textAlign: 'center',
   },
   title: {
     alignSelf: 'flex-start',

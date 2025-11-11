@@ -42,9 +42,10 @@ export default function Rotas() {
         }}
       />
       <Tab.Screen
-        name="Relatório"
+        name="Relatorio"
         component={RelatorioNavigation}
         options={{
+          tabBarLabel: 'Relatório',
           tabBarIcon: ({ focused }) => (
             <Ionicons name="clipboard-outline" size={24} color={focused ? colors.secundario : 'gray'} />
           ),

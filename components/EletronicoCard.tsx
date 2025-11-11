@@ -72,12 +72,12 @@ export default function EletronicoCard({ item, vazio }: EletronicoCardProps) {
 
   if (vazio || !item) {
     return (
-      <View style={[styles.card, { backgroundColor: colors.backCard }]}>
+      <View style={[styles.card, { backgroundColor: colors.background }]}>
         <View style={styles.info}>
-          <Text style={[styles.tipo, { color: colors.primario }]}>
+          <Text style={[styles.tipo, { color: colors.titulo }]}>
             Nenhum eletrônico reciclado ainda
           </Text>
-          <Text style={[styles.marcaModelo, { color: colors.secundario }]}>
+          <Text style={[styles.marcaModelo, { color: colors.titulo }]}>
             Quando você reciclar, os dados aparecerão aqui 😄
           </Text>
         </View>
@@ -95,7 +95,10 @@ export default function EletronicoCard({ item, vazio }: EletronicoCardProps) {
           <View style={styles.iconRow}>
             <Ionicons name="cube-outline" size={16} color={colors.branco} />
             <Text style={[styles.material, { color: colors.branco, marginLeft: 4 }]}>
-              Quantidade: {item.massa}g
+              Quantidade:{" "}
+              {item.massa < 1000
+                ? `${item.massa}g`
+                : `${(item.massa / 1000).toFixed(2)}kg`}
             </Text>
           </View>
 
@@ -122,7 +125,7 @@ export default function EletronicoCard({ item, vazio }: EletronicoCardProps) {
               style={styles.coinIcon} 
             />
             <Text style={[styles.material, { color: colors.branco }]}>
-              E-coins: {item.pontos || 0}
+              E-coins: {(item.pontos ?? 0).toFixed(2)}
             </Text>
           </View>
         </View>

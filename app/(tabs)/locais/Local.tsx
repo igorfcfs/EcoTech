@@ -131,8 +131,15 @@ export default function Local({ navigation, route }: Props) {
     ? ((local.qtdUserReciclada * 100) / local.qtdReciclada).toFixed(2) + "%"
     : "0%";
 
-  const qtdRecicladaFormatada = local.qtdReciclada > 1000 ? local.qtdReciclada / 1000 + " kg" : local.qtdReciclada + " g";
-  const qtdUserRecicladaFormatada = local.qtdUserReciclada > 1000 ? local.qtdUserReciclada / 1000 + " kg" : local.qtdUserReciclada + " g";
+  const qtdRecicladaFormatada =
+    local.qtdReciclada >= 1000
+      ? (local.qtdReciclada / 1000).toFixed(2) + " kg"
+      : local.qtdReciclada + " g";
+
+  const qtdUserRecicladaFormatada =
+    local.qtdUserReciclada >= 1000
+      ? (local.qtdUserReciclada / 1000).toFixed(2) + " kg"
+      : local.qtdUserReciclada + " g";
 
   const styles = StyleSheet.create({
     coverImage: {

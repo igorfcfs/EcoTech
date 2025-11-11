@@ -11,7 +11,7 @@ import EletronicoCard from '../../../components/EletronicoCard';
 import Titulo from '../../../components/Titulo';
 import { auth } from '../../../firebaseConfig';
 
-type Props = RelatorioTabScreenProps<"Histórico">;
+type Props = RelatorioTabScreenProps<"Historico">;
 
 const RelatorioScreen = ({ navigation }: Props) => {
   const [eletronicos, setEletronicos] = useState([]);
